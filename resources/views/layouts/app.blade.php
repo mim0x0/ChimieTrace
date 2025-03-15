@@ -77,9 +77,22 @@
             </div>
         </nav>
 
-        <main class="py-4">
+        <div class="row">
+        @auth
+        <!-- Sidebar -->
+        <div class="sidebar bg-light p-3" style="width: 250px; height: 100vh;">
+            <ul class="list-unstyled mt-4">
+                <li><a href="{{ url('/search') }}" class="btn btn-secondary w-100">🔍 Search</a></li>
+                <li><a href="{{ url('/inventory') }}" class="btn btn-secondary w-100 mt-2">📦 Inventory</a></li>
+                <li><a href="{{ url('/i/create') }}" class="btn btn-secondary w-100 mt-2">➕ Add Container</a></li>
+            </ul>
+        </div>
+        @endauth
+
+        <main class="py-4 col-md">
             @yield('content')
         </main>
+        </div>
     </div>
     
 </body>
