@@ -82,7 +82,7 @@
         <!-- Sidebar -->
         <div class="sidebar bg-light p-3" style="width: 250px; height: 100vh;">
             <ul class="list-unstyled mt-4">
-                <li><a href="{{ url('/search') }}" class="btn btn-secondary w-100">🔍 Search</a></li>
+                {{-- <li><a href="{{ url('/search') }}" class="btn btn-secondary w-100">🔍 Search</a></li> --}}
                 <li><a href="{{ url('/inventory') }}" class="btn btn-secondary w-100 mt-2">📦 Inventory</a></li>
                 <li><a href="{{ url('/i/create') }}" class="btn btn-secondary w-100 mt-2">➕ Add Container</a></li>
             </ul>
@@ -94,6 +94,132 @@
         </main>
         </div>
     </div>
-    
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    {{-- chemical search function --}}
+    <script>
+        // $(document).ready(function() {
+        //     $('#search').on('keyup', function() {
+        //         let query = $(this).val();
+
+        //         $.ajax({
+        //             url: "{{ route('inventory.search') }}",
+        //             type: "GET",
+        //             data: { search: query },
+        //             success: function(data) {
+        //                 $('#inventory-results').html(data);
+        //             }
+        //         })
+        //     })
+        // })
+
+        // $(document).ready(function(){
+        //     function fetchResults(query = "", page = 1) {
+        //         let url = query ? "{{ route('inventory.search') }}" : "{{ route('inventory.index') }}";
+
+        //         $.ajax({
+        //             url: url,
+        //             type: "GET",
+        //             data: { search: query, page: page },
+        //             success: function(data) {
+        //                 $('#inventory-results').html(data);
+        //             }
+        //         });
+        //     }
+
+        //     // Real-time search
+        //     $('#search').on('keyup', function() {
+        //         let query = $(this).val().trim();
+
+        //         if (query === "") {
+        //             window.location.href = "{{ route('inventory.index') }}"; // Redirect to normal inventory page
+        //         } else {
+        //             fetchResults(query);
+        //         }
+        //     });
+
+        //     // Handle pagination clicks
+        //     $(document).on('click', '.pagination a', function(e) {
+        //         e.preventDefault();
+        //         let page = $(this).attr('href').split('page=')[1];
+        //         let query = $('#search').val().trim();
+
+        //         fetchResults(query, page);
+        //     });
+        // });
+
+        $(document).ready(function(){
+        function fetchResults(query = "", page = 1, filters = []) {
+            let url = "{{ route('inventory.search') }}";
+
+            // 🔹 Prevent redirecting to inventory/search when search is empty
+            if (query === "" && page === 1) {
+                window.location.href = "{{ route('inventory.index') }}";
+                return;
+            }
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                data: { search: query, page: page, filters: filters },
+                success: function(data) {
+                    $('#inventory-results').html(data);
+                    applyColumnVisibility(filters);
+                }
+            });
+        }
+
+        // 🔹 Search Function (Only triggers AJAX if there's input)
+        $('#search').on('keyup', function() {
+            let query = $(this).val().trim();
+            let filters = getSelectedFilters();
+
+            if (query === "") {
+                fetchResults("", 1, filters);
+            } else {
+                fetchResults(query, 1, filters);
+            }
+        });
+
+        // 🔹 Handle Pagination (Prevents direct redirection)
+        $(document).on('click', '.pagination a', function(e) {
+            e.preventDefault();
+            let page = $(this).attr('href').split('page=')[1];
+            let query = $('#search').val().trim();
+            let filters = getSelectedFilters();
+
+            if (query === "") {
+                window.location.href = "{{ route('inventory.index') }}?page=" + page;
+            } else {
+                fetchResults(query, page, filters);
+            }
+        });
+
+        // 🔹 Toggle Filters
+        $('.filter-toggle').on('change', function() {
+            let filters = getSelectedFilters();
+            applyColumnVisibility(filters);
+        });
+
+        // 🔹 Get Selected Filters
+        function getSelectedFilters() {
+            let filters = [];
+            $('.filter-toggle:checked').each(function() {
+                filters.push($(this).data('column'));
+            });
+            return filters;
+        }
+
+        // 🔹 Apply Column Visibility
+        function applyColumnVisibility(filters) {
+            $('th, td').hide(); // Hide all columns
+            filters.forEach(column => {
+                $('.col-' + column).show(); // Show selected columns
+            });
+        }
+    });
+    </script>
+
 </body>
 </html>

@@ -18,8 +18,30 @@
             </div>
         </div> -->
 
+        <input type="text" id="search" class="form-control mb-3" placeholder="🔍 Search chemicals...">
+
+        <div class="dropdown mb-3">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Select Filters
+            </button>
+            <ul class="dropdown-menu p-3" aria-labelledby="filterDropdown">
+                <li><label><input type="checkbox" class="filter-toggle" data-column="chemical_name" checked> Chemical Name</label></li>
+                <li><label><input type="checkbox" class="filter-toggle" data-column="CAS_number" checked> CAS Number</label></li>
+                <li><label><input type="checkbox" class="filter-toggle" data-column="serial_number" checked> Serial Number</label></li>
+                <li><label><input type="checkbox" class="filter-toggle" data-column="location" checked> Location</label></li>
+                <li><label><input type="checkbox" class="filter-toggle" data-column="quantity" checked> Quantity</label></li>
+                <li><label><input type="checkbox" class="filter-toggle" data-column="SKU" checked> SKU</label></li>
+                <li><label><input type="checkbox" class="filter-toggle" data-column="exp_at" checked> Expiry Date</label></li>
+                <li><label><input type="checkbox" class="filter-toggle" data-column="acq_at" checked> Acquired Date</label></li>
+            </ul>
+        </div>
+
+        <div id="inventory-results">
+            @include('inventories.search', ['inventories' => $inventories])
+        </div>
+
         <!-- Main Inventory Table -->
-        <div class="col-md-9">
+        {{-- <div class="col-md-9">
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -37,14 +59,9 @@
                         </tr>
                     @endforeach
 
-                    <div class="row">
-                        <div class="col-12">
-                            {{ $inventories->links() }}
-                        </div>
-                    </div>
                 </tbody>
             </table>
-        </div>
+        </div> --}}
     </div>
 </div>
 @endsection

@@ -130,6 +130,21 @@
                 </div>
 
                 <div class="row mb-3">
+                    <label for="acq_at" class="col-md-4 col-form-label">Acquired At</label>
+                    <input id="acq_at"
+                            type="date"
+                            class="form-control @error('acq_at') is-invalid @enderror"
+                            name="acq_at"
+                            value="{{ old('acq_at', now()->toDateString()) }}"
+                            required autocomplete="acq_at" autofocus>
+                    @error('acq_at')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+                </div>
+
+                <div class="row mb-3">
                     <label for="exp_at" class="col-md-4 col-form-label">Expired At</label>
                     <input id="exp_at"
                             type="date"
@@ -141,6 +156,25 @@
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>
+                    @enderror
+                </div>
+
+                {{-- <div class="mb-3">
+                    <label for="SDS_file" class="col-md-4 col-form-label">Upload SDS file</label>
+                    <input id="SDS_file"
+                            type="file"
+                            class="form-control"
+                            name="SDS_file" accept=".pdf">
+                </div> --}}
+
+                <div class="row">
+                    <label for="SDS_file" class="col-md-4 col-form-label">Upload SDS</label>
+                    <input type="file" class="form-input" id="SDS_file" name="SDS_file">
+
+                    @error('SDS_file')
+                        {{-- <span class="invalid-feedback" role="alert"> --}}
+                            <strong>{{ $message }}</strong>
+                        {{-- </span> --}}
                     @enderror
                 </div>
 

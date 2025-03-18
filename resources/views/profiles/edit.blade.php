@@ -67,7 +67,7 @@
 
                 </div>
 
-                <div class="row mb-3">
+                {{-- <div class="row mb-3">
                     <label for="score" class="col-md-4 col-form-label">Score</label>
 
                     <input id="score"
@@ -83,7 +83,7 @@
                         </span>
                     @enderror
 
-                </div>
+                </div> --}}
 
                 <div class="row">
                     <label for="profile_pic" class="col-md-4 col-form-label">Profile Picture</label>
