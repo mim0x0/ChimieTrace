@@ -64,4 +64,8 @@ class User extends Authenticatable
     public function inventories() {
         return $this->hasMany(Inventory::class);
     }
+
+    public function chemicals() {
+        return $this->hasMany(Chemical::class);
+    }
 }

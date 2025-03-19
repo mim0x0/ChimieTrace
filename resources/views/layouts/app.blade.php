@@ -60,6 +60,10 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="/profile/{{ auth()->user()->id }}">
+                                        {{ __('Profile') }}
+                                    </a>
+
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -84,7 +88,8 @@
             <ul class="list-unstyled mt-4">
                 {{-- <li><a href="{{ url('/search') }}" class="btn btn-secondary w-100">🔍 Search</a></li> --}}
                 <li><a href="{{ url('/inventory') }}" class="btn btn-secondary w-100 mt-2">📦 Inventory</a></li>
-                <li><a href="{{ url('/i/create') }}" class="btn btn-secondary w-100 mt-2">➕ Add Container</a></li>
+                <li><a href="{{ url('/i/createChemical') }}" class="btn btn-secondary w-100 mt-2">➕ Add Chemical Item</a></li>
+                <li><a href="{{ url('/i/createInventory') }}" class="btn btn-secondary w-100 mt-2">➕ Add Chemical Inventory</a></li>
             </ul>
         </div>
         @endauth

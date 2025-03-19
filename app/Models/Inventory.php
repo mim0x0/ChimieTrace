@@ -9,9 +9,8 @@ use function Symfony\Component\Clock\now;
 class Inventory extends Model
 {
     protected $fillable = [
-        'chemical_name', 'CAS_number', 'serial_number', 'location',
-        'quantity', 'SKU', 'image', 'chemical_structure', 'exp_at',
-        'acq_at', 'SDS_file',
+        'location', 'quantity','exp_at', 'acq_at', 'SDS_file', 'add_by',
+        'chemical_id',
     ];
     // protected $fillable = [
     //     'chemical_name', 'image'
@@ -20,6 +19,10 @@ class Inventory extends Model
 
     public function user() {
         return $this->belongsTo(User::class);
+    }
+
+    public function chemical() {
+        return $this->belongsTo(Chemical::class);
     }
 
     // protected static function boot() {
@@ -32,21 +35,21 @@ class Inventory extends Model
     //     });
     // }
 
-    public function image() {
-        $imagePath = ($this->image) ? $this->image : "{{ asset('images/sample-chemical.png') }}";
+    // public function image() {
+    //     $imagePath = ($this->image) ? $this->image : "{{ asset('images/sample-chemical.png') }}";
 
-        return '/storage/' . $imagePath;
-    }
+    //     return '/storage/' . $imagePath;
+    // }
 
-    public function structure() {
-        $imagePath = ($this->chemical_structure) ? $this->chemical_structure : "{{ asset('images/sample-chemical.png') }}";
+    // public function structure() {
+    //     $imagePath = ($this->chemical_structure) ? $this->chemical_structure : "{{ asset('images/sample-chemical.png') }}";
 
-        return '/storage/' . $imagePath;
-    }
+    //     return '/storage/' . $imagePath;
+    // }
 
-    public function SDS() {
-        $filePath = ($this->SDS_file) ? $this->SDS_file : "{{ asset('images/sample-chemical.png') }}";
+    // public function SDS() {
+    //     $filePath = ($this->SDS_file) ? $this->SDS_file : "{{ asset('images/sample-chemical.png') }}";
 
-        return '/storage/' . $filePath;
-    }
+    //     return '/storage/' . $filePath;
+    // }
 }

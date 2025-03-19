@@ -28,16 +28,16 @@
                 <li><label><input type="checkbox" class="filter-toggle" data-column="chemical_name" checked> Chemical Name</label></li>
                 <li><label><input type="checkbox" class="filter-toggle" data-column="CAS_number" checked> CAS Number</label></li>
                 <li><label><input type="checkbox" class="filter-toggle" data-column="serial_number" checked> Serial Number</label></li>
-                <li><label><input type="checkbox" class="filter-toggle" data-column="location" checked> Location</label></li>
-                <li><label><input type="checkbox" class="filter-toggle" data-column="quantity" checked> Quantity</label></li>
+                {{-- <li><label><input type="checkbox" class="filter-toggle" data-column="location" checked> Location</label></li>
+                <li><label><input type="checkbox" class="filter-toggle" data-column="quantity" checked> Quantity</label></li> --}}
                 <li><label><input type="checkbox" class="filter-toggle" data-column="SKU" checked> SKU</label></li>
-                <li><label><input type="checkbox" class="filter-toggle" data-column="exp_at" checked> Expiry Date</label></li>
-                <li><label><input type="checkbox" class="filter-toggle" data-column="acq_at" checked> Acquired Date</label></li>
+                {{-- <li><label><input type="checkbox" class="filter-toggle" data-column="exp_at" checked> Expiry Date</label></li>
+                <li><label><input type="checkbox" class="filter-toggle" data-column="acq_at" checked> Acquired Date</label></li> --}}
             </ul>
         </div>
 
         <div id="inventory-results">
-            @include('inventories.search', ['inventories' => $inventories])
+            @include('inventories.search', ['chemicals' => $chemicals])
         </div>
 
         <!-- Main Inventory Table -->

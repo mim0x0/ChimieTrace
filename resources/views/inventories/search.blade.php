@@ -4,7 +4,7 @@
 
 
 
-@if($inventories->count() > 0)
+@if($chemicals->count() > 0)
     {{-- @foreach ($inventories as $inventory)
         <div class="card p-3 mt-3 bg-light">
             <div class="row" onclick="window.location='{{ url('/i/' . $inventory->id) }}';" style="cursor: pointer;">
@@ -28,31 +28,31 @@
                 <th class="col-chemical_name">Chemical Name</th>
                 <th class="col-CAS_number">CAS Number</th>
                 <th class="col-serial_number">Serial Number</th>
-                <th class="col-location">Location</th>
-                <th class="col-quantity">Quantity</th>
+                {{-- <th class="col-location">Location</th>
+                <th class="col-quantity">Quantity</th> --}}
                 <th class="col-SKU">SKU</th>
-                <th class="col-acq_at">Acquired Date</th>
-                <th class="col-exp_at">Expiry Date</th>
+                {{-- <th class="col-acq_at">Acquired Date</th>
+                <th class="col-exp_at">Expiry Date</th> --}}
             </tr>
         </thead>
         <tbody>
-            @foreach ($inventories as $inventory)
-                <tr onclick="window.location='{{ url('/i/' . $inventory->id) }}';" style="cursor: pointer;">
-                    <td class="col-chemical_name">{{ $inventory->chemical_name }}</td>
-                    <td class="col-CAS_number">{{ $inventory->CAS_number }}</td>
-                    <td class="col-serial_number">{{ $inventory->serial_number }}</td>
-                    <td class="col-location">{{ $inventory->location }}</td>
-                    <td class="col-quantity">{{ $inventory->quantity }}</td>
-                    <td class="col-SKU">{{ $inventory->SKU }}</td>
-                    <td class="col-acq_at">{{ $inventory->acq_at }}</td>
-                    <td class="col-exp_at">{{ $inventory->exp_at }}</td>
+            @foreach ($chemicals as $chemical)
+                <tr onclick="window.location='{{ url('/i/' . $chemical->id) }}';" style="cursor: pointer;">
+                    <td class="col-chemical_name">{{ $chemical->chemical_name }}</td>
+                    <td class="col-CAS_number">{{ $chemical->CAS_number }}</td>
+                    <td class="col-serial_number">{{ $chemical->serial_number }}</td>
+                    {{-- <td class="col-location">{{ $chemical->location }}</td>
+                    <td class="col-quantity">{{ $chemical->quantity }}</td> --}}
+                    <td class="col-SKU">{{ $chemical->SKU }}</td>
+                    {{-- <td class="col-acq_at">{{ $chemical->acq_at }}</td>
+                    <td class="col-exp_at">{{ $chemical->exp_at }}</td> --}}
                 </tr>
             @endforeach
         </tbody>
     </table>
 
     <div class="mt-3">
-        {{ $inventories->appends(request()->except('page'))->links() }}
+        {{ $chemicals->appends(request()->except('page'))->links() }}
     </div>
 
 @else

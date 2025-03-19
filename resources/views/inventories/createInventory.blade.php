@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
 
-    <form action="/i" enctype="multipart/form-data" method="post">
+    <form action="/i/inventory" enctype="multipart/form-data" method="post">
         @csrf
 
         <div class="row">
@@ -14,6 +14,17 @@
                 </div>
 
                 <div class="row mb-3">
+                    <label for="chemical_id" class="col-md-4 col-form-label">Select Chemical</label>
+
+                    <select class="form-control" name="chemical_id" id="chemical_id">
+                        @foreach ($chemicals as $chemical)
+                            <option value="{{ $chemical->id }}">{{ $chemical->chemical_name }} ({{ $chemical->CAS_number }})</option>
+                        @endforeach
+                    </select>
+
+                </div>
+
+                {{-- <div class="row mb-3">
                     <label for="chemical_name" class="col-md-4 col-form-label">Chemical Name</label>
 
                     <input id="chemical_name"
@@ -29,9 +40,9 @@
                         </span>
                     @enderror
 
-                </div>
+                </div> --}}
 
-                <div class="row">
+                {{-- <div class="row">
                     <label for="image" class="col-md-4 col-form-label">Chemical Image</label>
                     <input type="file" class="form-input" id="image" name="image">
 
@@ -40,20 +51,20 @@
                             <strong>{{ $message }}</strong>
                         <!-- </span> -->
                     @enderror
-                </div>
+                </div> --}}
 
-                <div class="row">
+                {{-- <div class="row">
                     <label for="chemical_structure" class="col-md-4 col-form-label">Chemical Structure</label>
                     <input type="file" class="form-input" id="chemical_structure" name="chemical_structure">
 
                     @error('chemical_structure')
-                        {{-- <span class="invalid-feedback" role="alert"> --}}
+                        <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
-                        {{-- </span> --}}
+                        </span>
                     @enderror
-                </div>
+                </div> --}}
 
-                <div class="row mb-3">
+                {{-- <div class="row mb-3">
                     <label for="CAS_number" class="col-md-4 col-form-label">CAS Number</label>
                     <input id="CAS_number"
                             type="text"
@@ -81,7 +92,7 @@
                             <strong>{{ $message }}</strong>
                         </span>
                     @enderror
-                </div>
+                </div> --}}
 
                 <div class="row mb-3">
                     <label for="location" class="col-md-4 col-form-label">Location</label>
@@ -114,7 +125,7 @@
                     @enderror
                 </div>
 
-                <div class="row mb-3">
+                {{-- <div class="row mb-3">
                     <label for="SKU" class="col-md-4 col-form-label">SKU</label>
                     <input id="SKU"
                             type="text"
@@ -127,7 +138,7 @@
                             <strong>{{ $message }}</strong>
                         </span>
                     @enderror
-                </div>
+                </div> --}}
 
                 <div class="row mb-3">
                     <label for="acq_at" class="col-md-4 col-form-label">Acquired At</label>
@@ -167,16 +178,6 @@
                             name="SDS_file" accept=".pdf">
                 </div> --}}
 
-                <div class="row">
-                    <label for="SDS_file" class="col-md-4 col-form-label">Upload SDS</label>
-                    <input type="file" class="form-input" id="SDS_file" name="SDS_file">
-
-                    @error('SDS_file')
-                        {{-- <span class="invalid-feedback" role="alert"> --}}
-                            <strong>{{ $message }}</strong>
-                        {{-- </span> --}}
-                    @enderror
-                </div>
 
                 <div class="row pt-4 col-2">
                     <button class="btn btn-primary">Add new chemical</button>

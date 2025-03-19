@@ -13,10 +13,12 @@ Auth::routes();
 
 Route::get('/inventory', [InventoriesController::class, 'index'])->name('inventory.index');
 Route::get('/inventory/search', [InventoriesController::class, 'search'])->name('inventory.search');
-Route::get('/i/create', [InventoriesController::class, 'create']);
-Route::post('/i', [InventoriesController::class, 'store']);
+Route::get('/i/createChemical', [InventoriesController::class, 'createChemical']);
+Route::post('/i/chemical', [InventoriesController::class, 'storeChemical']);
+Route::get('/i/createInventory', [InventoriesController::class, 'createInventory']);
+Route::post('/i/inventory', [InventoriesController::class, 'storeInventory']);
 // Route::get('/i/scrape', [InventoriesController::class, 'scrape']);
-Route::get('/i/{inventory}', [InventoriesController::class, 'show']);
+Route::get('/i/{chemical}', [InventoriesController::class, 'show']);
 
 Route::get('/profile/{user}', [ProfilesController::class, 'details'])->name('profile.show');
 Route::get('/profile/{user}/edit', [ProfilesController::class, 'edit'])->name('profile.edit');
