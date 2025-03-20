@@ -25,6 +25,10 @@ class Inventory extends Model
         return $this->belongsTo(Chemical::class);
     }
 
+    public function usages() {
+        return $this->hasMany(InventoryUsage::class);
+    }
+
     // protected static function boot() {
     //     parent::boot();
 

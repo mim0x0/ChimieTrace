@@ -42,6 +42,10 @@
                     <p><strong>Expiry Date:</strong> {{ $i->exp_at }}</p>
                 </div>
             </div>
+
+            <button class="list-group-item list-group-item-action" onclick="window.location='{{ url('/i/'. $i->id . '/reduce') }}';" style="cursor: pointer;">
+                ➖ Use Chemical
+            </button>
         </div>
     @endforeach
 

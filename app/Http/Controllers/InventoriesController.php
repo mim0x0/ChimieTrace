@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use GuzzleHttp\Client;
 use App\Models\Chemical;
 use App\Models\Inventory;
 use Faker\Provider\Image;
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use App\Models\InventoryUsage;
 
 class InventoriesController extends Controller
 {
@@ -16,6 +17,7 @@ class InventoriesController extends Controller
 
     public function createChemical() {
         // $chemicals = Chemical::all();
+        $this->authorize('create', Chemical::class);
         return view('inventories.createChemical');
     }
 
@@ -84,6 +86,7 @@ class InventoriesController extends Controller
     }
 
     public function createInventory() {
+        $this->authorize('create', Inventory::class);
         $chemicals = Chemical::all();
         return view('inventories.createInventory', compact('chemicals'));
     }
@@ -153,7 +156,7 @@ class InventoriesController extends Controller
     }
 
     public function index() {
-        $chemicals = Chemical::paginate(5);
+        $chemicals = Chemical::paginate(3);
         return view('inventories.index', compact('chemicals'));
     }
 
@@ -166,7 +169,7 @@ class InventoriesController extends Controller
                 ->orWhere('CAS_number', 'LIKE', "%{$query}%")
                 ->orWhere('serial_number', 'LIKE', "%{$query}%")
                 ->orWhere('SKU', 'LIKE', "%{$query}%")
-                ->paginate(5);
+                ->paginate(3);
 
 
         // $chemicals = Inventory::whereHas('chemical', function ($q) use ($query) {
@@ -207,4 +210,36 @@ class InventoriesController extends Controller
     //         dd($response_body);
     //     };
     // }
+
+    public function reduceQuantity(Inventory $inventory) {
+        return view('inventories.useInventory', compact('inventory'));
+    }
+
+    public function storeReduce(Inventory $inventory) {
+        // dd($inventory->id);
+        $chemical = $inventory->chemical_id;
+        $data = request()->validate([
+            'quantity_used' => ['required', 'numeric', 'max:' . $inventory->quantity],
+            'reason' => ['required', 'string'],
+        ]);
+
+        // Deduct quantity
+        $inventory->decrement('quantity', $data['quantity_used']);
+
+        // Log the usage
+        InventoryUsage::create([
+            'user_id' => auth()->id(),
+            'inventory_id' => $inventory->id,
+            'quantity_used' => $data['quantity_used'],
+            'reason' => $data['reason'],
+        ]);
+
+        return redirect('/i/'.$chemical)->with('success', 'Quantity reduced successfully');
+    }
+
+    public function inventoryLog() {
+        $this->authorize('viewAny', InventoryUsage::class);
+        $inventoryUsage = InventoryUsage::with('inventory.chemical.user')->paginate(3);
+        return view('inventories.inventoryLog', compact('inventoryUsage'));
+    }
 }
