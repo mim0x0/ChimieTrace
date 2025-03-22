@@ -33,20 +33,35 @@
     </div>
 
     @foreach ($inventories as $i)
-        <div class="card p-3 mt-3 bg-light">
-            <div class="row">
-                <div class="col-md">
-                    <p><strong>Location:</strong> {{ $i->location }}</p>
-                    <p><strong>Quantity:</strong> {{ $i->quantity }}</p>
-                    <p><strong>Acquired Date:</strong> {{ $i->acq_at }}</p>
-                    <p><strong>Expiry Date:</strong> {{ $i->exp_at }}</p>
+        @if (strpos(auth()->user()->email, '@admin.com') !== false || $i->status != 'disabled')
+            <div class="card p-3 mt-3 bg-light">
+                <div class="row">
+                    <div class="col-md">
+                        <p><strong>Location:</strong> {{ $i->location }}</p>
+                        <p><strong>Quantity:</strong> {{ $i->quantity }}</p>
+                        <p><strong>Acquired Date:</strong> {{ $i->acq_at }}</p>
+                        <p><strong>Expiry Date:</strong> {{ $i->exp_at }}</p>
+                    </div>
                 </div>
-            </div>
 
-            <button class="list-group-item list-group-item-action" onclick="window.location='{{ url('/i/'. $i->id . '/reduce') }}';" style="cursor: pointer;">
-                ➖ Use Chemical
-            </button>
-        </div>
+                @if(strpos(auth()->user()->email, '@admin.com') !== false && $i->status === 'sealed')
+                    {{-- <form action="{{ url('/i/'.$i->id.'/unseal') }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" class="btn btn-warning">Unseal Inventory</button>
+                    </form> --}}
+                    <a href="{{ url('/i/'.$i->id.'/unseal') }}" class="btn btn-sm btn-primary">Unseal Inventory</a>
+                @endif
+
+                <button class="list-group-item list-group-item-action" onclick="window.location='{{ url('/i/'. $i->id . '/reduce') }}';" style="cursor: pointer;" @if($i->status === 'sealed') disabled @endif>
+                    ➖ Use Chemical
+                </button>
+
+                @if($i->status === 'sealed')
+                <p><strong>The container is still sealed</strong></p>
+                @endif
+            </div>
+        @endif
     @endforeach
 
 

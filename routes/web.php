@@ -20,6 +20,11 @@ Route::post('/i/chemical', [InventoriesController::class, 'storeChemical']);
 Route::get('/i/createInventory', [InventoriesController::class, 'createInventory']);
 Route::post('/i/inventory', [InventoriesController::class, 'storeInventory']);
 // Route::get('/i/scrape', [InventoriesController::class, 'scrape']);
+
+Route::get('/i/alerts', [InventoriesController::class, 'showAlerts']);
+Route::get('/i/alerts/{alert}/read', [InventoriesController::class, 'markAsRead']);
+
+Route::get('/i/{inventory}/unseal', [InventoriesController::class, 'unseal'])->name('inventory.unseal');
 Route::get('/i/{inventory}/reduce', [InventoriesController::class, 'reduceQuantity']);
 Route::post('/i/{inventory}/reduce', [InventoriesController::class, 'storeReduce']);
 Route::get('/i/{chemical}', [InventoriesController::class, 'show']);

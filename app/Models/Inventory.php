@@ -10,7 +10,7 @@ class Inventory extends Model
 {
     protected $fillable = [
         'location', 'quantity','exp_at', 'acq_at', 'SDS_file', 'add_by',
-        'chemical_id',
+        'chemical_id', 'status',
     ];
     // protected $fillable = [
     //     'chemical_name', 'image'
@@ -27,6 +27,14 @@ class Inventory extends Model
 
     public function usages() {
         return $this->hasMany(InventoryUsage::class);
+    }
+
+    public function alerts() {
+        return $this->hasMany(Alert::class);
+    }
+
+    public function isDepleted() {
+        return $this->quantity <= 0;
     }
 
     // protected static function boot() {

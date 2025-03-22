@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alert;
 use GuzzleHttp\Client;
 use App\Models\Chemical;
 use App\Models\Inventory;
@@ -189,7 +190,14 @@ class InventoriesController extends Controller
     public function show(Chemical $chemical) {
         // $chemical = $inventory->chemical();
         // dd($chemical->id, $chemical->chemical_name);
-        $inventories = Inventory::where('chemical_id', $chemical->id)->get();
+        // $inventories = Inventory::where('chemical_id', $chemical->id)->where('status', '!=', 'disabled')->with('chemical')->get();
+        $user = auth()->user();
+        if (strpos($user->email, '@admin.com') !== false) {
+            $inventories = Inventory::where('chemical_id', $chemical->id)->get();
+        } else {
+            $inventories = Inventory::where('chemical_id', $chemical->id)->where('status', '!=', 'disabled')->with('chemical')->get();
+        }
+
         return view('inventories.show', compact('chemical', 'inventories'));
     }
 
@@ -212,34 +220,83 @@ class InventoriesController extends Controller
     // }
 
     public function reduceQuantity(Inventory $inventory) {
+        if ($inventory->status === 'sealed') {
+            return back()->with('error', 'This inventory is sealed and cannot be used.');
+        }
         return view('inventories.useInventory', compact('inventory'));
     }
 
     public function storeReduce(Inventory $inventory) {
-        // dd($inventory->id);
+        // dd(Inventory::where('chemical_id', $inventory->chemical_id)->count() < 2);
         $chemical = $inventory->chemical_id;
         $data = request()->validate([
             'quantity_used' => ['required', 'numeric', 'max:' . $inventory->quantity],
             'reason' => ['required', 'string'],
         ]);
 
-        // Deduct quantity
-        $inventory->decrement('quantity', $data['quantity_used']);
+        // if ($inventory->status === 'sealed') {
+        //     return back()->with('error', 'This inventory is sealed and cannot be used.');
+        // }
 
         // Log the usage
-        InventoryUsage::create([
+        auth()->user()->inventory_usages()->create([
             'user_id' => auth()->id(),
             'inventory_id' => $inventory->id,
             'quantity_used' => $data['quantity_used'],
             'reason' => $data['reason'],
         ]);
 
+        // Deduct quantity
+        $inventory->decrement('quantity', $data['quantity_used']);
+
+        // **Check if quantity is below the threshold**
+        // $totalQuantity = Inventory::where('chemical_id', $inventory->chemical_id)->sum('quantity');
+        if (Inventory::where('chemical_id', $inventory->chemical_id)->count() < 2) { // Adjust threshold as needed
+            Alert::create([
+                'inventory_id' => $inventory->id,
+                // 'user_id' => '1',
+                'message' => "Warning: Low stock for {$inventory->chemical->chemical_name}",
+            ]);
+        }
+
+        if ($inventory->quantity <= 0) {
+            $inventory->status = 'disabled'; // Mark inventory as disabled
+            $inventory->save();
+
+            // Notify admin of depletion
+            Alert::create([
+                'inventory_id' => $inventory->id,
+                'user_id' => auth()->id(),
+                'message' => "Inventory for {$inventory->chemical->chemical_name} is depleted. Admin should review and delete if necessary.",
+            ]);
+        } else {
+            $inventory->save();
+        }
+
         return redirect('/i/'.$chemical)->with('success', 'Quantity reduced successfully');
     }
 
     public function inventoryLog() {
         $this->authorize('viewAny', InventoryUsage::class);
-        $inventoryUsage = InventoryUsage::with('inventory.chemical.user')->paginate(3);
+        $inventoryUsage = InventoryUsage::with('inventory.chemical.user')->latest()->paginate(3);
         return view('inventories.inventoryLog', compact('inventoryUsage'));
+    }
+
+    public function showAlerts(){
+        $this->authorize('viewAny', InventoryUsage::class);
+        $alerts = Alert::where('is_read', false)->latest()->paginate(3);
+        return view('inventories.alert', compact('alerts'));
+    }
+
+    public function markAsRead(Alert $alert){
+        $alert->update(['is_read' => true]);
+        return redirect()->back()->with('success', 'Alert marked as read');
+    }
+
+    public function unseal(Inventory $inventory) {
+        // $inventory = Inventory::findOrFail($id);
+        // dd($inventory->id);
+        $inventory->update(['status' => 'enabled']);
+        return back()->with('success', 'Inventory unsealed successfully.');
     }
 }

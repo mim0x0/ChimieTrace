@@ -40,6 +40,19 @@
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
+                        @can('viewAny', App\Models\InventoryUsage::class)
+                            @php
+                                $alertCount = \App\Models\Alert::where('is_read', false)->count();
+                            @endphp
+
+
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="/i/alerts">
+                                    Alerts <span class="badge bg-danger">{{ $alertCount }}</span>
+                                </a>
+                            </li>
+                        @endcan
                         <!-- Authentication Links -->
                         @guest
                             @if (Route::has('login'))

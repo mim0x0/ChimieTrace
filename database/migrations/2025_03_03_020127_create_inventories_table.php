@@ -17,12 +17,12 @@ return new class extends Migration
 
             $table->foreignId('user_id')->index();
             $table->foreignId('chemical_id')->index();
-            // $table->string('chemical_name')->nullable();
-            // $table->string('CAS_number')->unique();
-            // $table->string('serial_number')->nullable();
+            $table->string('description')->nullable();
+            $table->string('brand')->nullable();
+            $table->string('status')->nullable()->default('sealed');
             $table->string('location')->nullable();
             $table->decimal('quantity')->nullable();
-            // $table->string('SKU')->nullable();
+            $table->string('notes')->nullable();
             // $table->string('image')->nullable();
             // $table->string('chemical_structure')->nullable();
             $table->date('acq_at')->nullable();
