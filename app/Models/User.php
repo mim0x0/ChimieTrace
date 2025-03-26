@@ -76,4 +76,8 @@ class User extends Authenticatable
     public function alerts() {
         return $this->hasMany(Alert::class);
     }
+
+    public function markets() {
+        return $this->hasMany(Market::class);
+    }
 }

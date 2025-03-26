@@ -53,9 +53,40 @@
                     <a href="{{ url('/i/'.$i->id.'/unseal') }}" class="btn btn-sm btn-primary">Unseal Inventory</a>
                 @endif
 
-                <button class="list-group-item list-group-item-action" onclick="window.location='{{ url('/i/'. $i->id . '/reduce') }}';" style="cursor: pointer;" @if($i->status === 'sealed') disabled @endif>
+                @if(strpos(auth()->user()->email, '@admin.com') !== false && $i->status === 'disabled')
+                    <form action="{{ url('/i/'.$i->id.'/delete') }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-warning">Delete Container</button>
+                    </form>
+                    {{-- <a href="{{ url('/i/'.$i->id.'/delete') }}" class="btn btn-sm btn-primary">Delete Container</a> --}}
+                @else
+                    <button class="list-group-item list-group-item-action" onclick="window.location='{{ url('/i/'. $i->id . '/reduce') }}';" style="cursor: pointer;" @if($i->status === 'sealed') disabled @endif>
+                        ➖ Use Chemical
+                    </button>
+                @endif
+
+                <li class="nav-item dropdown">
+                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                        Buy Chemical Item
+                    </a>
+
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/market">
+                            {{ __('From Supplier Contacts') }}
+                        </a>
+
+                        {{-- <a class="dropdown-item" href="{{ route('logout') }}"
+                           onclick="event.preventDefault();
+                                         document.getElementById('logout-form').submit();">
+                            {{ __('Logout') }}
+                        </a> --}}
+                    </div>
+                </li>
+
+                {{-- <button class="list-group-item list-group-item-action" onclick="window.location='{{ url('/i/'. $i->id . '/reduce') }}';" style="cursor: pointer;" @if($i->status === 'sealed') disabled @endif>
                     ➖ Use Chemical
-                </button>
+                </button> --}}
 
                 @if($i->status === 'sealed')
                 <p><strong>The container is still sealed</strong></p>

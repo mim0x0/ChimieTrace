@@ -23,6 +23,10 @@ class Chemical extends Model
         return $this->hasMany(Inventory::class);
     }
 
+    public function markets() {
+        return $this->hasMany(Market::class);
+    }
+
     // protected static function boot() {
     //     parent::boot();
 

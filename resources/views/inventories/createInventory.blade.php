@@ -178,6 +178,23 @@
                             name="SDS_file" accept=".pdf">
                 </div> --}}
 
+                <div class="row mb-3">
+                    <label for="container_count" class="col-md-4 col-form-label">Number of Containers</label>
+                    <input id="container_count"
+                            type="number"
+                            step="1"
+                            class="form-control @error('container_count') is-invalid @enderror"
+                            name="container_count"
+                            value="1"
+                            min="1"
+                            required autocomplete="container_count" autofocus>
+                    @error('container_count')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+                </div>
+
 
                 <div class="row pt-4 col-2">
                     <button class="btn btn-primary">Add new chemical</button>

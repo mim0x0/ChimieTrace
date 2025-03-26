@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('status')->nullable();
             // $table->string('score')->nullable();
             $table->string('profile_pic')->nullable();
+
+            $table->string('company_name')->nullable();
+            $table->string('phone_number')->nullable();
             $table->timestamps();
 
             // $table->index('user_id');

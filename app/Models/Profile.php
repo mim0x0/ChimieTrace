@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Profile extends Model
 {
     protected $fillable = [
-        'status', 'score', 'profile_pic'
+        'status', 'score', 'profile_pic', 'company_name', 'phone_number',
     ];
 
     public function profilePic() {

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->index();
             $table->decimal('quantity_used')->nullable();
             $table->text('reason')->nullable();
+            $table->date('log_date')->nullable();
 
             $table->timestamps();
         });

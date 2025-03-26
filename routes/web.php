@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MarketsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfilesController;
@@ -27,7 +28,15 @@ Route::get('/i/alerts/{alert}/read', [InventoriesController::class, 'markAsRead'
 Route::get('/i/{inventory}/unseal', [InventoriesController::class, 'unseal'])->name('inventory.unseal');
 Route::get('/i/{inventory}/reduce', [InventoriesController::class, 'reduceQuantity']);
 Route::post('/i/{inventory}/reduce', [InventoriesController::class, 'storeReduce']);
+Route::delete('/i/{inventory}/delete', [InventoriesController::class, 'destroy'])->name('inventory.destroy');
 Route::get('/i/{chemical}', [InventoriesController::class, 'show']);
+
+Route::get('/market', [MarketsController::class, 'index']);
+Route::get('/m/create', [MarketsController::class, 'create']);
+Route::post('/m/store', [MarketsController::class, 'store']);
+Route::get('/m/{market}/edit', [MarketsController::class, 'edit']);
+Route::put('/m/{market}', [MarketsController::class, 'update']);
+Route::delete('/m/{market}', [MarketsController::class, 'delete']);
 
 Route::get('/profile/{user}', [ProfilesController::class, 'details'])->name('profile.show');
 Route::get('/profile/{user}/edit', [ProfilesController::class, 'edit'])->name('profile.edit');

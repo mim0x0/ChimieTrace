@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->decimal('quantity')->nullable();
             $table->string('notes')->nullable();
-            // $table->string('image')->nullable();
-            // $table->string('chemical_structure')->nullable();
+            $table->integer('min_container')->nullable();
+            $table->decimal('min_quantity')->nullable();
             $table->date('acq_at')->nullable();
             $table->date('exp_at')->nullable();
             $table->string('add_by')->nullable();

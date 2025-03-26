@@ -37,6 +37,10 @@ class Inventory extends Model
         return $this->quantity <= 0;
     }
 
+    public function markets() {
+        return $this->hasMany(Market::class);
+    }
+
     // protected static function boot() {
     //     parent::boot();
 

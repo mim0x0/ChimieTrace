@@ -110,6 +110,9 @@
                 @can('viewAny', App\Models\InventoryUsage::class)
                     <li><a href="{{ url('/i/usage') }}" class="btn btn-secondary w-100 mt-2">➕ View Chemical Usage Log</a></li>
                 @endcan
+                {{-- @can('viewAny', App\Models\InventoryUsage::class) --}}
+                    <li><a href="{{ url('/m/create') }}" class="btn btn-secondary w-100 mt-2">Create chemical supply</a></li>
+                {{-- @endcan --}}
             </ul>
         </div>
         @endauth

@@ -107,6 +107,7 @@ class InventoriesController extends Controller
             'quantity' => ['required', 'numeric'],
             'acq_at' => ['required', 'date'],
             'exp_at' => ['required', 'date'],
+            'container_count' => ['required', 'integer', 'min:1'],
             // 'add_by' => ['required', 'string'],
         ]);
 
@@ -143,15 +144,17 @@ class InventoriesController extends Controller
         //     // ));
         // }
 
-        auth()->user()->inventories()->create([
-            'user_id' => auth()->id(),
-            'chemical_id' => $data['chemical_id'],
-            'location' => $data['location'],
-            'quantity' => $data['quantity'],
-            'acq_at' => $data['acq_at'],
-            'exp_at' => $data['exp_at'],
-            'add_by' => auth()->user()->name,
-        ]);
+        for ($i = 0; $i < $data['container_count']; $i++) {
+            auth()->user()->inventories()->create([
+                'user_id' => auth()->id(),
+                'chemical_id' => $data['chemical_id'],
+                'location' => $data['location'],
+                'quantity' => $data['quantity'],
+                'acq_at' => $data['acq_at'],
+                'exp_at' => $data['exp_at'],
+                'add_by' => auth()->user()->name,
+            ]);
+        }
 
         return redirect('/inventory')->with('success', 'Inventory added successfully');
     }
@@ -260,8 +263,9 @@ class InventoriesController extends Controller
         }
 
         if ($inventory->quantity <= 0) {
-            $inventory->status = 'disabled'; // Mark inventory as disabled
-            $inventory->save();
+            $inventory->update(['status' => 'disabled']);
+            // $inventory->status = 'disabled'; // Mark inventory as disabled
+            // $inventory->save();
 
             // Notify admin of depletion
             Alert::create([
@@ -276,9 +280,19 @@ class InventoriesController extends Controller
         return redirect('/i/'.$chemical)->with('success', 'Quantity reduced successfully');
     }
 
+    public function destroy(Inventory $inventory) {
+        if ($inventory->status == 'disabled') {
+            $inventory->delete();
+            return back()->with('success', 'Depleted inventory deleted successfully.');
+        }
+
+        return back()->with('error', 'Inventory must be disabled before deletion.');
+    }
+
     public function inventoryLog() {
         $this->authorize('viewAny', InventoryUsage::class);
         $inventoryUsage = InventoryUsage::with('inventory.chemical.user')->latest()->paginate(3);
+        // dd($inventoryUsage);
         return view('inventories.inventoryLog', compact('inventoryUsage'));
     }
 
