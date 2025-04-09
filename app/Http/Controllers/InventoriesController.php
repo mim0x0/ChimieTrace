@@ -160,6 +160,7 @@ class InventoriesController extends Controller
     }
 
     public function index() {
+        $this->authorize('viewAny', Chemical::class);
         $chemicals = Chemical::paginate(3);
         return view('inventories.index', compact('chemicals'));
     }

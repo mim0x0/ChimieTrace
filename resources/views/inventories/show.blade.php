@@ -66,7 +66,13 @@
                     </button>
                 @endif
 
-                <li class="nav-item dropdown">
+                @if (strpos(auth()->user()->email, '@admin.com'))
+                    <button class="list-group-item list-group-item-action" onclick="window.location='{{ url('/market') }}';" style="cursor: pointer;">
+                        Buy Chemical Item
+                    </button>
+                @endif
+
+                {{-- <div class="nav-item dropdown">
                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                         Buy Chemical Item
                     </a>
@@ -75,14 +81,8 @@
                         <a class="dropdown-item" href="/market">
                             {{ __('From Supplier Contacts') }}
                         </a>
-
-                        {{-- <a class="dropdown-item" href="{{ route('logout') }}"
-                           onclick="event.preventDefault();
-                                         document.getElementById('logout-form').submit();">
-                            {{ __('Logout') }}
-                        </a> --}}
                     </div>
-                </li>
+                </div> --}}
 
                 {{-- <button class="list-group-item list-group-item-action" onclick="window.location='{{ url('/i/'. $i->id . '/reduce') }}';" style="cursor: pointer;" @if($i->status === 'sealed') disabled @endif>
                     ➖ Use Chemical

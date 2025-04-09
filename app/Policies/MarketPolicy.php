@@ -13,7 +13,11 @@ class MarketPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        if (str_ends_with($user->email, '@admin.com')) {
+            return true;
+        };
+
+        return $user->role === 'supplier';
     }
 
     /**
@@ -29,23 +33,24 @@ class MarketPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->role === 'supplier';
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Market $market): bool
+    public function update(User $user, Market $markets): bool
     {
-        return false;
+        // return false;
+        return $user->id === $markets->user_id;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Market $market): bool
+    public function delete(User $user, Market $markets): bool
     {
-        return false;
+        return $user->id === $markets->user_id;
     }
 
     /**

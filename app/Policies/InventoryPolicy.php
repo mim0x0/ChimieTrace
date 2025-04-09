@@ -13,7 +13,7 @@ class InventoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->role === 'faculty';
     }
 
     /**

@@ -36,7 +36,7 @@
                         <th>Supplier</th>
                         <th>Price</th>
                         <th>Stock Available</th>
-                        <th>Action</th>
+                        {{-- <th>Action</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -51,21 +51,22 @@
                         </tr>
                     @endforeach --}}
                     @foreach ($markets as $market)
-                        <tr>
+                        <tr onclick="window.location='{{ url('/m/'.$market->id) }}';" style="cursor: pointer;">
                             <td>{{ $market->chemical->chemical_name }}</td>
+                            <td>{{ $market->description }}</td>
                             <td>{{ $market->user->name }}</td>
-                            <td>${{ number_format($market->price, 2) }}</td>
+                            <td>{{ $market->currency }} {{ number_format($market->price, 2) }}</td>
                             <td>{{ $market->stock }}</td>
                             <td>
-                                @can('update', $market)
+                                {{-- @can('update', $markets)
                                     <a href="{{ route('market.edit', $market) }}" class="btn btn-warning btn-sm">Edit</a>
-                                @endcan
-                                @can('delete', $market)
+                                @endcan --}}
+                                {{-- @can('delete', $markets)
                                     <form action="{{ route('market.destroy', $market) }}" method="POST" style="display:inline;">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                     </form>
-                                @endcan
+                                @endcan --}}
                             </td>
                         </tr>
                     @endforeach

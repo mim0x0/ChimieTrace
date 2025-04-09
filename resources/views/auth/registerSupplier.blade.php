@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('Register') }}</div>
+                <div class="card-header">{{ __('Register Supplier') }}</div>
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('register') }}">
@@ -61,7 +61,7 @@
                             </div>
                         </div>
 
-                        <input type="hidden" name="role" value="faculty">
+                        <input type="hidden" name="role" value="supplier">
 
                         <div class="row mb-0">
                             <div class="col-md-6 offset-md-4">
@@ -72,7 +72,7 @@
                         </div>
 
                         <p>
-                            <a href="{{ url('/register/supplier') }}">Register as a Supplier</a>
+                            <a href="{{ url('/register') }}">Register as a Faculty member</a>
                         </p>
                     </form>
                 </div>

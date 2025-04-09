@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->decimal('quantity')->nullable();
             $table->string('notes')->nullable();
+            $table->string('buy_status')->nullable();
             $table->integer('min_container')->nullable();
             $table->decimal('min_quantity')->nullable();
             $table->date('acq_at')->nullable();

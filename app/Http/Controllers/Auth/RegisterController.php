@@ -28,7 +28,17 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/inventory';
+    protected function redirectTo(){
+        if (auth()->user()->role === 'faculty') {
+            return '/inventory';
+        } elseif (auth()->user()->role === 'supplier') {
+            return '/market';
+        }
+
+        return '/';
+    }
+    // protected $redirectTo = '/inventory';
+
 
     /**
      * Create a new controller instance.
@@ -48,10 +58,23 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        $role = $data['role'] ?? null;
+
+        if ($role === 'faculty') {
+            Validator::extend('faculty_email', function($attribute, $value, $parameters, $validator){
+                return preg_match('/@(student|lecturer|admin)\.com$/', $value);
+            });
+
+            $email = ['required', 'string', 'email', 'max:255', 'unique:users', 'faculty_email'];
+        } else {
+            $email = ['required', 'string', 'email', 'max:255', 'unique:users'];
+        }
+
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => $email,
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'role' => ['required', 'in:faculty,supplier'],
         ]);
     }
 
@@ -67,6 +90,7 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'role' => $data['role'],
         ]);
     }
 }

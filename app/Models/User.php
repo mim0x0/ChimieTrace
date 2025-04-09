@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -52,7 +53,7 @@ class User extends Authenticatable
         static::created(function ($user) {
             $user->profile()->create([
                 'status' => 'Active',
-                // 'score' => '100',
+                'score' => '100',
             ]);
         });
     }
@@ -79,5 +80,9 @@ class User extends Authenticatable
 
     public function markets() {
         return $this->hasMany(Market::class);
+    }
+
+    public function isSupplier() {
+        return $this->role === 'supplier';
     }
 }

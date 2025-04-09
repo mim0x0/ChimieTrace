@@ -32,8 +32,9 @@ class ProfilesController extends Controller
             'user_name' => 'required',
             'email' => 'required',
             'status' => 'required',
-            // 'score' => 'required',
-            'profile_pic' => '',
+            'score' => 'nullable',
+            'profile_pic' => 'nullable',
+            'phone_number' => 'nullable',
         ]);
 
         // dd(request()->all());
@@ -58,8 +59,9 @@ class ProfilesController extends Controller
 
         auth()->user()->profile->update([
             'status' => $data['status'],
-            // 'score' => $data['score'],
-            'profile_pic' => $imagePath,
+            'score' => $data['score'] ?? '',
+            'profile_pic' => $imagePath ?? '',
+            'phone_number' => $data['phone_number'] ?? '',
         ]);
 
         return redirect("/profile/{$user->id}");

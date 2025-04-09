@@ -12,6 +12,10 @@ Route::get('/', function () {
 
 Auth::routes();
 
+Route::get('/register/supplier', function () {
+    return view('auth.registerSupplier');
+});
+
 Route::get('/i/usage', [InventoriesController::class, 'inventoryLog']);
 
 Route::get('/inventory', [InventoriesController::class, 'index'])->name('inventory.index');
@@ -34,9 +38,14 @@ Route::get('/i/{chemical}', [InventoriesController::class, 'show']);
 Route::get('/market', [MarketsController::class, 'index']);
 Route::get('/m/create', [MarketsController::class, 'create']);
 Route::post('/m/store', [MarketsController::class, 'store']);
-Route::get('/m/{market}/edit', [MarketsController::class, 'edit']);
-Route::put('/m/{market}', [MarketsController::class, 'update']);
-Route::delete('/m/{market}', [MarketsController::class, 'delete']);
+Route::get('/m/{markets}/edit', [MarketsController::class, 'edit']);
+Route::patch('/m/{markets}', [MarketsController::class, 'update']);
+Route::delete('/m/{markets}', [MarketsController::class, 'delete']);
+
+Route::get('/m/banks/FPX', [MarketsController::class, 'getBankFPX']);
+Route::get('/m/{markets}', [MarketsController::class, 'buy']);
+Route::get('/m/{markets}/bill', [MarketsController::class, 'createBill']);
+Route::get('/m/bill/{bill_code}', [MarketsController::class, 'billPaymentLink'])->name('billPay');
 
 Route::get('/profile/{user}', [ProfilesController::class, 'details'])->name('profile.show');
 Route::get('/profile/{user}/edit', [ProfilesController::class, 'edit'])->name('profile.edit');

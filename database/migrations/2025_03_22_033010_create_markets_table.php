@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('user_id')->index();
-            $table->foreignId('inventory_id')->nullable();
+            // $table->foreignId('inventory_id')->nullable();
             $table->foreignId('chemical_id')->index();
             $table->string('description')->nullable();
             $table->decimal('price', 10, 2);
-            $table->string('currency', 10)->default('RM');
+            $table->string('currency', 1000)->default('RM');
             $table->integer('stock');
             // $table->enum('offer_status', ['pending', 'approved', 'rejected'])->default('pending');
 

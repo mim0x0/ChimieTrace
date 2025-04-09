@@ -100,7 +100,10 @@
         <div class="sidebar bg-light p-3" style="width: 250px; height: 100vh;">
             <ul class="list-unstyled mt-4">
                 {{-- <li><a href="{{ url('/search') }}" class="btn btn-secondary w-100">🔍 Search</a></li> --}}
-                <li><a href="{{ url('/inventory') }}" class="btn btn-secondary w-100 mt-2">📦 Inventory</a></li>
+
+                @can('viewAny', App\Models\Inventory::class)
+                    <li><a href="{{ url('/inventory') }}" class="btn btn-secondary w-100 mt-2">📦 Inventory</a></li>
+                @endcan
                 @can('create', App\Models\Chemical::class)
                     <li><a href="{{ url('/i/createChemical') }}" class="btn btn-secondary w-100 mt-2">➕ Add Chemical Item</a></li>
                 @endcan
@@ -110,9 +113,12 @@
                 @can('viewAny', App\Models\InventoryUsage::class)
                     <li><a href="{{ url('/i/usage') }}" class="btn btn-secondary w-100 mt-2">➕ View Chemical Usage Log</a></li>
                 @endcan
-                {{-- @can('viewAny', App\Models\InventoryUsage::class) --}}
+                @can('create', App\Models\Market::class)
                     <li><a href="{{ url('/m/create') }}" class="btn btn-secondary w-100 mt-2">Create chemical supply</a></li>
-                {{-- @endcan --}}
+                @endcan
+                @can('viewAny', App\Models\Market::class)
+                    <li><a href="{{ url('/market') }}" class="btn btn-secondary w-100 mt-2">Chemical Supply</a></li>
+                @endcan
             </ul>
         </div>
         @endauth

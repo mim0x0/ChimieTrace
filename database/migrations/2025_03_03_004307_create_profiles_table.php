@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->index();
             $table->string('status')->nullable();
-            // $table->string('score')->nullable();
+            $table->string('score')->nullable();
             $table->string('profile_pic')->nullable();
 
             $table->string('company_name')->nullable();
