@@ -37,7 +37,7 @@ class ChemicalPolicy
      */
     public function update(User $user, Chemical $chemical): bool
     {
-        return false;
+        return str_ends_with($user->email, '@admin.com');
     }
 
     /**
@@ -45,7 +45,7 @@ class ChemicalPolicy
      */
     public function delete(User $user, Chemical $chemical): bool
     {
-        return false;
+        return str_ends_with($user->email, '@admin.com');
     }
 
     /**

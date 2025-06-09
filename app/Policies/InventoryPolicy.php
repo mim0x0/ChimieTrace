@@ -37,7 +37,7 @@ class InventoryPolicy
      */
     public function update(User $user, Inventory $inventory): bool
     {
-        return false;
+        return str_ends_with($user->email, '@admin.com');
     }
 
     /**
@@ -45,7 +45,7 @@ class InventoryPolicy
      */
     public function delete(User $user, Inventory $inventory): bool
     {
-        return false;
+        return str_ends_with($user->email, '@admin.com');
     }
 
     /**

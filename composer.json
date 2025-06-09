@@ -9,9 +9,12 @@
         "php": "^8.2",
         "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^11.31",
+        "laravel/sanctum": "^4.0",
         "laravel/telescope": "^5.5",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.6",
+        "paypal/paypal-server-sdk": "1.0.0",
+        "stripe/stripe-php": "^17.1",
         "tarsoft/toyyibpay": "^0.3.0"
     },
     "require-dev": {

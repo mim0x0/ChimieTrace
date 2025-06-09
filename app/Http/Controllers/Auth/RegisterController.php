@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
+use Stripe\Stripe;
+use Stripe\Account;
 use App\Models\User;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use Stripe\AccountLink;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\RegistersUsers;
 
 class RegisterController extends Controller
 {
@@ -75,6 +79,7 @@ class RegisterController extends Controller
             'email' => $email,
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'in:faculty,supplier'],
+            'paypal_email' => ['nullable'],
         ]);
     }
 
@@ -87,10 +92,54 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
+        // $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'role' => $data['role'],
+            'paypal_email' => $data['paypal_email'] ?? '',
         ]);
+
+        // if ($user->role === 'supplier') {
+        //     Stripe::setApiKey(config('stripe.sk'));
+
+        //     $account = Account::create([
+        //         'type' => 'express',
+        //         'country' => 'MY',
+        //         'email' => $user->email,
+        //         'capabilities' => [
+        //             'transfers' => ['requested' => true],
+        //             'card_payments' => ['requested' => true],
+        //         ],
+        //         'business_type' => 'individual',
+        //     ]);
+
+        //     dd($account);
+
+        //     $user->stripe_account_id = $account->id;
+        //     $user->save();
+
+        //     $accountLink = AccountLink::create([
+        //         'account' => $account->id,
+        //         'refresh_url' => route('stripe.refresh'),
+        //         'return_url' => route('stripe.return'),
+        //         'type' => 'account_onboarding',
+        //     ]);
+
+        //     session(['supplier_oboarding_url' => $accountLink->url]);
+        // }
+
+        // return $user;
     }
+
+    // protected function registered(Request $request, $user) {
+    //     if($user->role === 'supplier' && session('supplier_onboarding_url')) {
+    //         $onboardingUrl = session('supplier_onboarding_url');
+    //         session()->forget('supplier_onboarding_url');
+
+    //         return redirect()->away($onboardingUrl);
+    //     }
+
+    //     return redirect($this->redirectPath());
+    // }
 }

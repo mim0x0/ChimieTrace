@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Chemical extends Model
 {
     protected $fillable = [
-        'chemical_name', 'CAS_number', 'serial_number',
+        'chemical_name', 'empirical_formula', 'CAS_number', 'molecular_weight', 'ec_number',
         'SKU', 'image', 'chemical_structure', 'SDS_file', 'reg_by',
     ];
     // protected $fillable = [

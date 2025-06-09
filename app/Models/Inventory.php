@@ -9,6 +9,7 @@ use function Symfony\Component\Clock\now;
 class Inventory extends Model
 {
     protected $fillable = [
+        'description', 'notes', 'serial_number', 'brand',
         'location', 'quantity','exp_at', 'acq_at', 'SDS_file', 'add_by',
         'chemical_id', 'status',
     ];

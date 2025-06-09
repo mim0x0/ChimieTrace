@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Alert;
 use GuzzleHttp\Client;
 use App\Models\Chemical;
@@ -9,6 +10,7 @@ use App\Models\Inventory;
 use Faker\Provider\Image;
 use Illuminate\Http\Request;
 use App\Models\InventoryUsage;
+use Illuminate\Validation\Rule;
 
 class InventoriesController extends Controller
 {
@@ -27,8 +29,9 @@ class InventoriesController extends Controller
             // 'chemical_id' => ['required', 'exists:chemicals,id'],
             'chemical_name' => ['required', 'string'],
             'CAS_number' => ['required', 'string', 'unique:chemicals,CAS_number'],
-            'serial_number' => ['required', 'string'],
-            'SKU' => ['required', 'string'],
+            'empirical_formula' => ['required', 'string'],
+            'molecular_weight' => ['required', 'numeric'],
+            'ec_number' => ['required', 'string'],
             'image' => ['required', 'image'],
             'chemical_structure' => ['required', 'image'],
             'SDS_file' => ['required', 'mimes:pdf'],
@@ -60,8 +63,9 @@ class InventoriesController extends Controller
             auth()->user()->chemicals()->create([
                 'chemical_name' => $data['chemical_name'],
                 'CAS_number' => $data['CAS_number'],
-                'serial_number' => $data['serial_number'],
-                'SKU' => $data['SKU'],
+                'ec_number' => $data['ec_number'],
+                'empirical_formula' => $data['empirical_formula'],
+                'molecular_weight' => $data['molecular_weight'],
                 'image' => $imagePath,
                 'chemical_structure' => $structurePath,
                 'SDS_file' => $SDSPath,
@@ -86,20 +90,72 @@ class InventoriesController extends Controller
         return redirect('/inventory')->with('success', 'Chemical added successfully');
     }
 
+    public function editChemical(Chemical $chemical){
+        // dd($chemical);
+        $this->authorize('update', $chemical);
+        return view('inventories.editChemical', compact('chemical'));
+    }
+
+    public function updateChemical(Request $request, Chemical $chemical){
+        $this->authorize('update', $chemical);
+
+        $data = $request->validate([
+            'chemical_name' => ['required', 'string'],
+            'CAS_number' => ['required', 'string', Rule::unique('chemicals')->ignore($chemical->id)],
+            'empirical_formula' => ['required', 'string'],
+            'molecular_weight' => ['required', 'numeric'],
+            'ec_number' => ['required', 'string'],
+            'image' => ['nullable', 'image'],
+            'chemical_structure' => ['nullable', 'image'],
+            'SDS_file' => ['nullable', 'mimes:pdf'],
+        ]);
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('image', 'public');
+        } else {
+            $data['image'] = $chemical->image;
+        }
+
+        if ($request->hasFile('chemical_structure')) {
+            $data['chemical_structure'] = $request->file('chemical_structure')->store('chemical_structure', 'public');
+        } else {
+            $data['chemical_structure'] = $chemical->chemical_structure;
+        }
+
+        if ($request->hasFile('SDS_file')) {
+            $data['SDS_file'] = $request->file('SDS_file')->store('SDS_file', 'public');
+        } else {
+            $data['SDS_file'] = $chemical->SDS_file;
+        }
+
+        $chemical->update($data);
+
+        return redirect('/i/'.$chemical->id)->with('success', 'Chemical updated successfully');
+    }
+
+    public function deleteChemical(Chemical $chemical){
+        $this->authorize('delete', $chemical);
+        // dd($chemical);
+        $chemical->delete();
+
+        return redirect('/inventory')->with('success', 'Offer deleted successfully');
+    }
+
     public function createInventory() {
         $this->authorize('create', Inventory::class);
         $chemicals = Chemical::all();
-        return view('inventories.createInventory', compact('chemicals'));
+        $users = User:: where('role', '=', 'supplier')->get();
+        return view('inventories.createInventory', compact('chemicals', 'users'));
     }
 
     public function storeInventory() {
         $data = request()->validate([
             'chemical_id' => ['required', 'exists:chemicals,id'],
             // 'chemical_name' => ['required', 'required_without:chemical_id'],
-            // 'CAS_number' => ['required', 'required_without:chemical_id'],
-            // 'serial_number' => ['required', 'string'],
-            // 'SKU' => ['required', 'string'],
-            // 'image' => ['required', 'image'],
+            'description' => ['required', 'string'],
+            'serial_number' => ['required', 'string'],
+            'notes' => ['required', 'string'],
+            'brand' => ['required', 'exists:users,name'],
             // 'chemical_structure' => ['required', 'image'],
             // 'SDS_file' => ['required', 'mimes:pdf'],
 
@@ -153,10 +209,51 @@ class InventoriesController extends Controller
                 'acq_at' => $data['acq_at'],
                 'exp_at' => $data['exp_at'],
                 'add_by' => auth()->user()->name,
+                'description' => $data['description'],
+                'serial_number' => $data['serial_number'],
+                'notes' => $data['notes'],
+                'brand' => $data['brand'],
             ]);
         }
 
         return redirect('/inventory')->with('success', 'Inventory added successfully');
+    }
+
+    public function editInventory(Inventory $inventory){
+        // dd($inventory);
+        $this->authorize('update', $inventory);
+        return view('inventories.editInventory', compact('inventory'));
+    }
+
+    public function updateInventory(Request $request, Inventory $inventory){
+        $this->authorize('update', $inventory);
+
+        $data = $request->validate([
+            // 'chemical_id' => ['required'],
+            'description' => ['required', 'string'],
+            // 'serial_number' => ['nullable', 'string'],
+            'notes' => ['required', 'string'],
+            // 'brand' => ['nullable'],
+
+            'location' => ['required', 'string'],
+            'quantity' => ['required', 'numeric'],
+            'acq_at' => ['required', 'date'],
+            'exp_at' => ['required', 'date'],
+            // 'container_count' => ['required', 'integer', 'min:1'],
+        ]);
+
+
+        $inventory->update($data);
+
+        return redirect('/i/'.$inventory->chemical->id)->with('success', 'Chemical updated successfully');
+    }
+
+    public function deleteInventory(Inventory $inventory){
+        $this->authorize('delete', $inventory);
+        // dd($inventory);
+        $inventory->delete();
+
+        return redirect('/inventory')->with('success', 'Offer deleted successfully');
     }
 
     public function index() {
