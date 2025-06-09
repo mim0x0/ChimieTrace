@@ -13,7 +13,7 @@ class InventoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->role === 'faculty';
+        return $user->role === config('roles.faculty') || $user->role === config('roles.admin');
     }
 
     /**
@@ -29,7 +29,7 @@ class InventoryPolicy
      */
     public function create(User $user): bool
     {
-        return str_ends_with($user->email, '@admin.com') || str_ends_with($user->email, '@lecturer.com');
+        return $user->role === config('roles.admin') || str_ends_with($user->email, config('roles.lecturer'));
     }
 
     /**
@@ -37,7 +37,8 @@ class InventoryPolicy
      */
     public function update(User $user, Inventory $inventory): bool
     {
-        return str_ends_with($user->email, '@admin.com');
+        // return str_ends_with($user->email, '@admin.com');
+        return $user->role === config('roles.admin') || str_ends_with($user->email, config('roles.lecturer'));
     }
 
     /**
@@ -45,7 +46,8 @@ class InventoryPolicy
      */
     public function delete(User $user, Inventory $inventory): bool
     {
-        return str_ends_with($user->email, '@admin.com');
+        // return str_ends_with($user->email, '@admin.com');
+        return $user->role === config('roles.admin');
     }
 
     /**
@@ -62,5 +64,16 @@ class InventoryPolicy
     public function forceDelete(User $user, Inventory $inventory): bool
     {
         return false;
+    }
+
+    public function use(User $user): bool
+    {
+        return $user->role === config('roles.faculty') || $user->role === config('roles.admin');
+    }
+
+    public function unseal(User $user): bool
+    {
+        // return str_ends_with($user->email, '@admin.com');
+        return $user->role === config('roles.admin') || str_ends_with($user->email, config('roles.lecturer'));
     }
 }

@@ -3,15 +3,78 @@
 namespace App\Models;
 
 use Carbon\Traits\Timestamp;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Spatie\Activitylog\Models\Activity;
 use function Symfony\Component\Clock\now;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Inventory extends Model
 {
+    use LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly($this->fillable)
+            ->logOnlyDirty()
+            ->useLogName('inventory')
+            ->setDescriptionForEvent(fn(string $eventName) => $this->getDescriptionForEvent($eventName));
+    }
+
+    public function getDescriptionForEvent(string $eventName) {
+        $user = auth()->check() ? auth()->user()->name : 'System';
+
+        $base = match ($eventName) {
+            'created' => "{$this->chemical->chemical_name} Serial: {$this->serial_number} Container #{$this->container_number}",
+            'updated' => "{$this->chemical->chemical_name} Serial: {$this->serial_number} Container #{$this->container_number}",
+            'deleted' => "{$this->chemical->chemical_name} Serial: {$this->serial_number} Container #{$this->container_number}",
+            default => "$user performed $eventName on chemical container: {$this->chemical->chemical_name} Serial: {$this->serial_number} Container #{$this->container_number}",
+        };
+
+    //     if ($eventName === 'updated') {
+    //     $changes = collect($this->getChanges());
+    //     $original = $this->getOriginal();
+
+    //     $excluded = ['updated_at', 'created_at'];
+    //     $filtered = $changes->except($excluded);
+
+    //     if ($filtered->count() === 1 && $filtered->has('quantity')) {
+    //         return '';
+    //     }
+
+    //     // if ($filtered->isNotEmpty()) {
+    //     //     $fieldsChanged = $filtered->map(function ($new, $key) use ($original) {
+    //     //         $old = $original[$key] ?? 'N/A';
+    //     //         return "$key: '$old' -> '$new'";
+    //     //     })->implode(', ');
+
+    //     //     $base .= " --- \nChanged: $fieldsChanged";
+    //     // }
+    // }
+    return $base;
+    }
+
+    public function tapActivity(Activity $activity, string $eventName){
+        if (auth()->check()) {
+            $activity->properties = $activity->properties->merge([
+                'custom' => array_merge(
+                    $activity->properties->get('custom', []),
+                    ['causer_name' => auth()->user()->name,]
+                ),
+                // 'causer_name' => auth()->user()->name,
+                // 'causer_email' => auth()->user()->email,
+            ]);
+        }
+    }
+
     protected $fillable = [
         'description', 'notes', 'serial_number', 'brand',
         'location', 'quantity','exp_at', 'acq_at', 'SDS_file', 'add_by',
         'chemical_id', 'status',
+        'packaging_type', 'unit',
+        'min_quantity', 'container_number',
     ];
     // protected $fillable = [
     //     'chemical_name', 'image'
@@ -42,31 +105,54 @@ class Inventory extends Model
         return $this->hasMany(Market::class);
     }
 
-    // protected static function boot() {
-    //     parent::boot();
+    public function serialNumbers() {
+        return $this->belongsTo(SerialNumber::class);
+    }
 
-    //     static::created(function ($inventory) {
-    //         $inventory->update([
-    //             'acq_at' => now("Asia/Kuala_Lumpur"),
-    //         ]);
+    // protected static function booted(){
+    //     static::saved(function ($inventory) {
+    //         self::exportToJson();
+    //     });
+
+    //     static::deleted(function ($inventory) {
+    //         self::exportToJson();
     //     });
     // }
 
-    // public function image() {
-    //     $imagePath = ($this->image) ? $this->image : "{{ asset('images/sample-chemical.png') }}";
+    // public static function exportToJson(){
+    //     $data = self::with(['user', 'chemical'])
+    //                 ->get()
+    //                 // ->toArray()
+    //                 ->groupBy('serial_number')
+    //                 ->map(function ($group, $serial) {
+    //                     return [
+    //                         // 'pageContent' => [
+    //                         //     'id' => $inventory->id,
+    //                         //     'description' => $inventory->description,
+    //                         //     'location' => $inventory->location,
+    //                         //     'packaging_type' => $inventory->packaging_type,
+    //                         //     'quantity' => $inventory->quantity,
+    //                         //     'unit' => $inventory->unit,
+    //                         //     'min_quantity' => $inventory->min_quantity,
+    //                         //     'status' => $inventory->status,
+    //                         //     'acq_at' => $inventory->acq_at,
+    //                         //     'exp_at' => $inventory->exp_at,
+    //                         //     'add_by' => $inventory->add_by,
+    //                         //     'brand' => $inventory->brand,
+    //                         //     'notes' => $inventory->notes,
+    //                         //     'serial_number' => $inventory->serial_number,
+    //                             // 'user' => $inventory->user,
+    //                             // 'chemical' => $inventory->chemical
+    //                         // ],
+    //                         // 'metadata' => [
+    //                         //     'id' => $inventory->id
+    //                         // ]
+    //                         'chunk_id' => $serial,
+    //                         'entries' => $group->toArray(),
+    //                     ];
+    //                 })
+    //                 ->values()->toArray();
 
-    //     return '/storage/' . $imagePath;
-    // }
-
-    // public function structure() {
-    //     $imagePath = ($this->chemical_structure) ? $this->chemical_structure : "{{ asset('images/sample-chemical.png') }}";
-
-    //     return '/storage/' . $imagePath;
-    // }
-
-    // public function SDS() {
-    //     $filePath = ($this->SDS_file) ? $this->SDS_file : "{{ asset('images/sample-chemical.png') }}";
-
-    //     return '/storage/' . $filePath;
+    //     Storage::disk('local')->put('exports/inventories.json', json_encode($data, JSON_PRETTY_PRINT));
     // }
 }

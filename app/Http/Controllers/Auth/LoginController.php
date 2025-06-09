@@ -30,6 +30,8 @@ class LoginController extends Controller
             return '/inventory';
         } elseif (auth()->user()->role === 'supplier') {
             return '/market';
+        } elseif (auth()->user()->role === 'admin') {
+            return '/inventory';
         }
 
         return '/';

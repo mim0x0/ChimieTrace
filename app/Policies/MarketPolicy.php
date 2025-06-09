@@ -13,11 +13,11 @@ class MarketPolicy
      */
     public function viewAny(User $user): bool
     {
-        if (str_ends_with($user->email, '@admin.com')) {
+        if ($user->role === config('roles.admin')) {
             return true;
         };
 
-        return $user->role === 'supplier';
+        return $user->role === config('roles.supplier');
     }
 
     /**
@@ -33,7 +33,7 @@ class MarketPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === 'supplier';
+        return $user->role === config('roles.admin');
     }
 
     /**
@@ -67,5 +67,10 @@ class MarketPolicy
     public function forceDelete(User $user, Market $market): bool
     {
         return false;
+    }
+
+    public function buy(User $user): bool
+    {
+        return $user->role === config('roles.admin');
     }
 }

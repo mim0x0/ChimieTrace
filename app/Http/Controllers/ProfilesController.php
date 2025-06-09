@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Activitylog\Models\Activity;
 
 class ProfilesController extends Controller
 {
@@ -12,11 +13,18 @@ class ProfilesController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function details(User $user)
-    {
-        // $user = User::findOrFail($user);
 
-        return view('profiles.details', compact('user'));
+    public function __construct() {
+        $this->middleware(['auth', 'banned']);
+    }
+
+    public function details(User $user){
+        // dd($user->id);
+        // $user = User::findOrFail($user);
+        $activities = Activity::where('causer_id', $user->id)
+                            ->latest()->take(5)->get();
+
+        return view('profiles.details', compact('user', 'activities'));
     }
 
     public function edit(User $user) {

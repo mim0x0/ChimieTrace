@@ -14,13 +14,15 @@ return new class extends Migration
         Schema::create('alerts', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('user_id')->nullable()->index();
-            $table->foreignId('inventory_id')->index();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('inventory_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('user_request_id')->nullable()->constrained()->nullOnDelete();
 
             $table->string('message')->nullable();
             $table->decimal('current_overall_quantity')->nullable();
             $table->integer('current_containers')->nullable();
             $table->boolean('is_read')->default(false);
+            $table->string('receiver_type')->nullable();
 
             $table->timestamps();
         });

@@ -13,7 +13,8 @@ class AlertPolicy
      */
     public function viewAny(User $user): bool
     {
-        return str_ends_with($user->email, '@admin.com');
+        // return str_ends_with($user->email, '@admin.com');
+        return $user->role === config('roles.admin');
     }
 
     /**
@@ -37,7 +38,7 @@ class AlertPolicy
      */
     public function update(User $user, Alert $alert): bool
     {
-        return false;
+        return $user->role === config('roles.admin');
     }
 
     /**
@@ -45,7 +46,7 @@ class AlertPolicy
      */
     public function delete(User $user, Alert $alert): bool
     {
-        return false;
+        return $user->role === config('roles.admin');
     }
 
     /**

@@ -4,18 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Alert;
+use App\Models\Brand;
 use GuzzleHttp\Client;
 use App\Models\Chemical;
 use App\Models\Inventory;
 use Faker\Provider\Image;
+use App\Models\UserRequest;
+use App\Models\SerialNumber;
 use Illuminate\Http\Request;
 use App\Models\InventoryUsage;
 use Illuminate\Validation\Rule;
+use App\Models\ChemicalProperty;
 
 class InventoriesController extends Controller
 {
     public function __construct() {
-        $this->middleware('auth');
+        $this->middleware(['auth', 'banned']);
     }
 
     public function createChemical() {
@@ -25,6 +29,8 @@ class InventoriesController extends Controller
     }
 
     public function storeChemical() {
+        $this->authorize('create', Chemical::class);
+
         $data = request()->validate([
             // 'chemical_id' => ['required', 'exists:chemicals,id'],
             'chemical_name' => ['required', 'string'],
@@ -32,7 +38,7 @@ class InventoriesController extends Controller
             'empirical_formula' => ['required', 'string'],
             'molecular_weight' => ['required', 'numeric'],
             'ec_number' => ['required', 'string'],
-            'image' => ['required', 'image'],
+            // 'image' => ['required', 'image'],
             'chemical_structure' => ['required', 'image'],
             'SDS_file' => ['required', 'mimes:pdf'],
             // 'reg_by' => ['required', 'string'],
@@ -48,7 +54,7 @@ class InventoriesController extends Controller
         if ($chemical) {
             return redirect()->back()->with('success', 'Chemical already registered');
         } else {
-            $imagePath = request('image')->store('uploads', 'public');
+            // $imagePath = request('image')->store('uploads', 'public');
             $structurePath = request('chemical_structure')->store('uploads', 'public');
             $SDSPath = request('SDS_file')->store('uploads', 'public');
 
@@ -66,7 +72,7 @@ class InventoriesController extends Controller
                 'ec_number' => $data['ec_number'],
                 'empirical_formula' => $data['empirical_formula'],
                 'molecular_weight' => $data['molecular_weight'],
-                'image' => $imagePath,
+                // 'image' => $imagePath,
                 'chemical_structure' => $structurePath,
                 'SDS_file' => $SDSPath,
                 'reg_by' => auth()->user()->name,
@@ -86,6 +92,9 @@ class InventoriesController extends Controller
         //     'acq_at' => $data['acq_at'],
         //     'exp_at' => $data['exp_at'],
         // ]);
+        // activity('chemical')
+        //     ->withProperties()
+        //     ->log(auth()->user()->name . ' has created ' . $data['chemical_name'] . '(' . $data['CAS_number'] . ')');
 
         return redirect('/inventory')->with('success', 'Chemical added successfully');
     }
@@ -105,16 +114,16 @@ class InventoriesController extends Controller
             'empirical_formula' => ['required', 'string'],
             'molecular_weight' => ['required', 'numeric'],
             'ec_number' => ['required', 'string'],
-            'image' => ['nullable', 'image'],
+            // 'image' => ['nullable', 'image'],
             'chemical_structure' => ['nullable', 'image'],
             'SDS_file' => ['nullable', 'mimes:pdf'],
         ]);
 
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('image', 'public');
-        } else {
-            $data['image'] = $chemical->image;
-        }
+        // if ($request->hasFile('image')) {
+        //     $data['image'] = $request->file('image')->store('image', 'public');
+        // } else {
+        //     $data['image'] = $chemical->image;
+        // }
 
         if ($request->hasFile('chemical_structure')) {
             $data['chemical_structure'] = $request->file('chemical_structure')->store('chemical_structure', 'public');
@@ -133,6 +142,29 @@ class InventoriesController extends Controller
         return redirect('/i/'.$chemical->id)->with('success', 'Chemical updated successfully');
     }
 
+    public function editChemicalProperty(Chemical $chemical){
+        $this->authorize('update', $chemical);
+        $property = $chemical->properties ?? new ChemicalProperty();
+        return view('inventories.editChemicalProperty', compact('chemical', 'property'));
+    }
+
+    public function updateChemicalProperty(Request $request, Chemical $chemical){
+        $this->authorize('update', $chemical);
+
+        $data = $request->validate([
+            'color' => 'nullable|string|max:255',
+            'physical_state' => 'nullable|string|max:255',
+            'melting_point' => 'nullable|numeric',
+            'boiling_point' => 'nullable|numeric',
+            'flammability' => 'nullable|string|max:255',
+            'other_details' => 'nullable|string',
+        ]);
+
+        $chemical->properties()->updateOrCreate([],$data);
+
+        return redirect('/i/'.$chemical->id)->with('success', 'Chemical Property updated successfully');
+    }
+
     public function deleteChemical(Chemical $chemical){
         $this->authorize('delete', $chemical);
         // dd($chemical);
@@ -141,29 +173,35 @@ class InventoriesController extends Controller
         return redirect('/inventory')->with('success', 'Offer deleted successfully');
     }
 
-    public function createInventory() {
+    public function createInventory(Chemical $chemical) {
         $this->authorize('create', Inventory::class);
-        $chemicals = Chemical::all();
-        $users = User:: where('role', '=', 'supplier')->get();
-        return view('inventories.createInventory', compact('chemicals', 'users'));
+        // $chemicals = Chemical::all();
+        $users = User:: where('role', '=', config('roles.supplier'))->get();
+        $brands = Brand::orderBy('name')->get();
+        return view('inventories.createInventory', compact('chemical', 'users', 'brands'));
     }
 
-    public function storeInventory() {
+    public function storeInventory(Chemical $chemical) {
+        $this->authorize('create', Inventory::class);
+
         $data = request()->validate([
             'chemical_id' => ['required', 'exists:chemicals,id'],
             // 'chemical_name' => ['required', 'required_without:chemical_id'],
             'description' => ['required', 'string'],
-            'serial_number' => ['required', 'string'],
-            'notes' => ['required', 'string'],
-            'brand' => ['required', 'exists:users,name'],
+            'serial_number' => ['required', 'string', 'unique:serial_numbers,serial_number'],
+            'notes' => ['nullable', 'string'],
+            'brand' => ['nullable', 'string'],
             // 'chemical_structure' => ['required', 'image'],
             // 'SDS_file' => ['required', 'mimes:pdf'],
 
             'location' => ['required', 'string'],
+            'packaging_type' => ['required', 'string'],
             'quantity' => ['required', 'numeric'],
+            'unit' => ['required', 'string'],
             'acq_at' => ['required', 'date'],
             'exp_at' => ['required', 'date'],
             'container_count' => ['required', 'integer', 'min:1'],
+            'min_quantity' => ['required', 'numeric'],
             // 'add_by' => ['required', 'string'],
         ]);
 
@@ -201,11 +239,14 @@ class InventoriesController extends Controller
         // }
 
         for ($i = 0; $i < $data['container_count']; $i++) {
+            $count = $i + 1;
             auth()->user()->inventories()->create([
                 'user_id' => auth()->id(),
                 'chemical_id' => $data['chemical_id'],
                 'location' => $data['location'],
+                'packaging_type' => $data['packaging_type'],
                 'quantity' => $data['quantity'],
+                'unit' => $data['unit'],
                 'acq_at' => $data['acq_at'],
                 'exp_at' => $data['exp_at'],
                 'add_by' => auth()->user()->name,
@@ -213,16 +254,109 @@ class InventoriesController extends Controller
                 'serial_number' => $data['serial_number'],
                 'notes' => $data['notes'],
                 'brand' => $data['brand'],
+                'min_quantity' => $data['min_quantity'],
+                'container_number' => $count,
             ]);
         }
 
-        return redirect('/inventory')->with('success', 'Inventory added successfully');
+        // $serial = SerialNumber::where('serial_number', $data['serial_number'])->first();
+
+        // dd($serial);
+
+        // if ($serial) {
+        //     // Serial number already exists, increment the counter
+        //     $serial->increment('counter', $data['container_count']);
+        // } else {
+            // Create new serial number with initial counter
+        $serial = SerialNumber::create([
+            'serial_number' => $data['serial_number'],
+            'counter' => $data['container_count'],
+        ]);
+        // }
+
+        if ($serial && $serial->status === 'notified') {
+            $serial->buy_status = 'safe';
+            $serial->save();
+        }
+
+        return redirect('/i/'.$chemical->id)->with('success', 'Inventory added successfully');
+    }
+
+    public function addInventory(Inventory $inventory) {
+        $this->authorize('create', Inventory::class);
+        // $chemicals = Chemical::all();
+        $users = User:: where('role', '=', config('roles.supplier'))->get();
+        $brands = Brand::orderBy('name')->get();
+        return view('inventories.addInventory', compact('inventory', 'users', 'brands'));
+    }
+
+    public function storeAddInventory(Inventory $inventory) {
+        $this->authorize('create', Inventory::class);
+
+        $data = request()->validate([
+            'chemical_id' => ['required', 'exists:chemicals,id'],
+            // 'chemical_name' => ['required', 'required_without:chemical_id'],
+            'description' => ['required', 'string'],
+            'serial_number' => ['required', 'string', 'exists:serial_numbers,serial_number'],
+            'notes' => ['nullable', 'string'],
+            'brand' => ['nullable', 'string'],
+            // 'chemical_structure' => ['required', 'image'],
+            // 'SDS_file' => ['required', 'mimes:pdf'],
+
+            'location' => ['required', 'string'],
+            'packaging_type' => ['required', 'string'],
+            'quantity' => ['required', 'numeric'],
+            'unit' => ['required', 'string'],
+            'acq_at' => ['required', 'date'],
+            'exp_at' => ['required', 'date'],
+            'container_count' => ['required', 'integer', 'min:1'],
+            'min_quantity' => ['required', 'numeric'],
+            // 'add_by' => ['required', 'string'],
+        ]);
+
+        $serial = SerialNumber::where('serial_number', $data['serial_number'])->first();
+        $startCounter = $serial->counter + 1;
+
+        for ($i = 0; $i < $data['container_count']; $i++) {
+            $count = $startCounter + $i;
+
+            auth()->user()->inventories()->create([
+                'user_id' => auth()->id(),
+                'chemical_id' => $data['chemical_id'],
+                'location' => $data['location'],
+                'packaging_type' => $data['packaging_type'],
+                'quantity' => $data['quantity'],
+                'unit' => $data['unit'],
+                'acq_at' => $data['acq_at'],
+                'exp_at' => $data['exp_at'],
+                'add_by' => auth()->user()->name,
+                'description' => $data['description'],
+                'serial_number' => $data['serial_number'],
+                'notes' => $data['notes'],
+                'brand' => $data['brand'],
+                'min_quantity' => $data['min_quantity'],
+                'container_number' => $count,
+            ]);
+        }
+
+        if ($serial && $serial->status === 'notified') {
+            $serial->buy_status = 'safe';
+            $serial->save();
+        }
+
+        // dd($serial);
+
+        $serial->increment('counter', $data['container_count']);
+
+        return redirect('/i/'.$inventory->chemical->id)->with('success', 'Inventory added successfully');
     }
 
     public function editInventory(Inventory $inventory){
         // dd($inventory);
         $this->authorize('update', $inventory);
-        return view('inventories.editInventory', compact('inventory'));
+        $users = User:: where('role', '=', config('roles.supplier'))->get();
+        $brands = Brand::orderBy('name')->get();
+        return view('inventories.editInventory', compact('inventory', 'users', 'brands'));
     }
 
     public function updateInventory(Request $request, Inventory $inventory){
@@ -232,18 +366,21 @@ class InventoriesController extends Controller
             // 'chemical_id' => ['required'],
             'description' => ['required', 'string'],
             // 'serial_number' => ['nullable', 'string'],
-            'notes' => ['required', 'string'],
-            // 'brand' => ['nullable'],
+            'notes' => ['nullable', 'string'],
+            'brand' => ['nullable', 'string'],
 
             'location' => ['required', 'string'],
             'quantity' => ['required', 'numeric'],
             'acq_at' => ['required', 'date'],
             'exp_at' => ['required', 'date'],
+            'min_quantity' => ['required', 'numeric'],
             // 'container_count' => ['required', 'integer', 'min:1'],
         ]);
 
 
         $inventory->update($data);
+        Inventory::where('serial_number', $inventory->serial_number)
+                    ->update(['min_quantity' => $data['min_quantity']]);
 
         return redirect('/i/'.$inventory->chemical->id)->with('success', 'Chemical updated successfully');
     }
@@ -256,21 +393,18 @@ class InventoriesController extends Controller
         return redirect('/inventory')->with('success', 'Offer deleted successfully');
     }
 
-    public function index() {
+    public function index(Request $request) {
         $this->authorize('viewAny', Chemical::class);
-        $chemicals = Chemical::paginate(3);
-        return view('inventories.index', compact('chemicals'));
-    }
-
-    public function search(Request $request){
+        // $chemicals = Chemical::paginate(3);
         $query = $request->input('search');
 
         $filters = $request->input('filters', []);
 
         $chemicals = Chemical::where('chemical_name', 'LIKE', "%{$query}%")
                 ->orWhere('CAS_number', 'LIKE', "%{$query}%")
-                ->orWhere('serial_number', 'LIKE', "%{$query}%")
-                ->orWhere('SKU', 'LIKE', "%{$query}%")
+                ->orWhere('empirical_formula', 'LIKE', "%{$query}%")
+                ->orWhere('ec_number', 'LIKE', "%{$query}%")
+                ->orWhere('molecular_weight', 'LIKE', "%{$query}%")
                 ->paginate(3);
 
 
@@ -285,42 +419,101 @@ class InventoriesController extends Controller
         // ->orWhere('exp_at', 'LIKE', "%{$query}%")
         // ->paginate(5);
 
-        return view('inventories.search', compact('chemicals'))->render();
+        if ($request->ajax()) {
+            return view('inventories._search', compact('chemicals'))->render();
+        }
+
+        return view('inventories.index', compact('chemicals'));
     }
 
-    public function show(Chemical $chemical) {
+    // public function search(Request $request){
+    //     $this->authorize('viewAny', Chemical::class);
+    //     $query = $request->input('search');
+
+    //     $filters = $request->input('filters', []);
+
+    //     $chemicals = Chemical::where('chemical_name', 'LIKE', "%{$query}%")
+    //             ->orWhere('CAS_number', 'LIKE', "%{$query}%")
+    //             ->orWhere('serial_number', 'LIKE', "%{$query}%")
+    //             ->orWhere('SKU', 'LIKE', "%{$query}%")
+    //             ->paginate(3);
+
+
+    //     // $chemicals = Inventory::whereHas('chemical', function ($q) use ($query) {
+    //     //     $q->where('chemical_name', 'LIKE', "%{$query}%")
+    //     //         ->orWhere('CAS_number', 'LIKE', "%{$query}%")
+    //     //         ->orWhere('serial_number', 'LIKE', "%{$query}%")
+    //     //         ->orWhere('SKU', 'LIKE', "%{$query}%");
+    //     // })
+    //     // ->orWhere('location', 'LIKE', "%{$query}%")
+    //     // ->orWhere('quantity', 'LIKE', "%{$query}%")
+    //     // ->orWhere('exp_at', 'LIKE', "%{$query}%")
+    //     // ->paginate(5);
+
+    //     return view('inventories._search', compact('chemicals'))->render();
+    // }
+
+    public function details(Chemical $chemical, Request $request) {
+        $this->authorize('viewAny', Inventory::class);
         // $chemical = $inventory->chemical();
         // dd($chemical->id, $chemical->chemical_name);
         // $inventories = Inventory::where('chemical_id', $chemical->id)->where('status', '!=', 'disabled')->with('chemical')->get();
+        $query = $request->input('search');
+        $filters = $request->input('filters', []);
+
+        // $chemicals = Chemical::where('chemical_name', 'LIKE', "%{$query}%")
+        //         ->orWhere('CAS_number', 'LIKE', "%{$query}%")
+        //         ->orWhere('serial_number', 'LIKE', "%{$query}%")
+        //         ->orWhere('SKU', 'LIKE', "%{$query}%")
+        //         ->paginate(3);
+
         $user = auth()->user();
-        if (strpos($user->email, '@admin.com') !== false) {
-            $inventories = Inventory::where('chemical_id', $chemical->id)->get();
+        if ($user->role === config('roles.admin')) {
+            $inventories = Inventory::where('chemical_id', $chemical->id)
+            ->where(function ($q) use ($query) {
+                $q->where('description', 'LIKE', "%{$query}%")
+                    ->orWhere('location', 'LIKE', "%{$query}%")
+                    ->orWhere('pacakaging_type', 'LIKE', "%{$query}%")
+                    ->orWhere('quantity', 'LIKE', "%{$query}%")
+                    ->orWhere('unit', 'LIKE', "%{$query}%")
+                    ->orWhere('status', 'LIKE', "%{$query}%")
+                    ->orWhere('serial_number', 'LIKE', "%{$query}%")
+                    ->orWhere('notes', 'LIKE', "%{$query}%")
+                    ->orWhere('brand', 'LIKE', "%{$query}%")
+                    ->orWhere('add_by', 'LIKE', "%{$query}%")
+                    ->orWhere('acq_at', 'LIKE', "%{$query}%")
+                    ->orWhere('ext_at', 'LIKE', "%{$query}%");
+            })
+            ->paginate(5);
         } else {
-            $inventories = Inventory::where('chemical_id', $chemical->id)->where('status', '!=', 'disabled')->with('chemical')->get();
+            $inventories = Inventory::where('chemical_id', $chemical->id)->where('status', '!=', 'disabled')->with('chemical')
+            ->where(function ($q) use ($query) {
+                $q->where('description', 'LIKE', "%{$query}%")
+                    ->orWhere('location', 'LIKE', "%{$query}%")
+                    ->orWhere('pacakaging_type', 'LIKE', "%{$query}%")
+                    ->orWhere('quantity', 'LIKE', "%{$query}%")
+                    ->orWhere('unit', 'LIKE', "%{$query}%")
+                    ->orWhere('status', 'LIKE', "%{$query}%")
+                    ->orWhere('serial_number', 'LIKE', "%{$query}%")
+                    ->orWhere('notes', 'LIKE', "%{$query}%")
+                    ->orWhere('brand', 'LIKE', "%{$query}%")
+                    ->orWhere('add_by', 'LIKE', "%{$query}%")
+                    ->orWhere('acq_at', 'LIKE', "%{$query}%")
+                    ->orWhere('ext_at', 'LIKE', "%{$query}%");
+            })
+            ->paginate(5);
         }
 
-        return view('inventories.show', compact('chemical', 'inventories'));
+        if ($request->ajax()) {
+            return view('inventories._searchDetail', compact( 'inventories'))->render();
+        }
+
+        return view('inventories.details', compact('chemical', 'inventories'));
     }
 
-    // public function scrape(Request $request) {
-    //     $url = $request->get('url');
-
-    //     $client = new Client();
-
-    //     $response = $client->request(
-    //         'get',
-    //         $url,
-    //     );
-
-    //     $response_status = $response->getStatusCode();
-    //     $response_body = $response->getBody()->getContents();
-
-    //     if($response_status == 200) {
-    //         dd($response_body);
-    //     };
-    // }
-
     public function reduceQuantity(Inventory $inventory) {
+        $this->authorize('use', Inventory::class);
+
         if ($inventory->status === 'sealed') {
             return back()->with('error', 'This inventory is sealed and cannot be used.');
         }
@@ -328,6 +521,7 @@ class InventoriesController extends Controller
     }
 
     public function storeReduce(Inventory $inventory) {
+        $this->authorize('use', Inventory::class);
         // dd(Inventory::where('chemical_id', $inventory->chemical_id)->count() < 2);
         $chemical = $inventory->chemical_id;
         $data = request()->validate([
@@ -339,47 +533,100 @@ class InventoriesController extends Controller
         //     return back()->with('error', 'This inventory is sealed and cannot be used.');
         // }
 
+        // Deduct quantity
+        $inventory->decrement('quantity', $data['quantity_used']);
+
+        $containerCount = Inventory::where('serial_number', $inventory->serial_number)
+                                    ->where('quantity', '>', 0)
+                                    ->count();
+
         // Log the usage
         auth()->user()->inventory_usages()->create([
             'user_id' => auth()->id(),
             'inventory_id' => $inventory->id,
+            'user_name' => $inventory->user->name,
+            'chemical_name' => $inventory->chemical->chemical_name,
+            'chemical_cas' => $inventory->chemical->CAS_number,
+            'inventory_serial' => $inventory->serial_number,
             'quantity_used' => $data['quantity_used'],
+            'quantity_left' => $inventory->quantity,
+            'container_left' => $containerCount,
             'reason' => $data['reason'],
         ]);
 
-        // Deduct quantity
-        $inventory->decrement('quantity', $data['quantity_used']);
 
         // **Check if quantity is below the threshold**
         // $totalQuantity = Inventory::where('chemical_id', $inventory->chemical_id)->sum('quantity');
-        if (Inventory::where('chemical_id', $inventory->chemical_id)->count() < 2) { // Adjust threshold as needed
-            Alert::create([
-                'inventory_id' => $inventory->id,
-                // 'user_id' => '1',
-                'message' => "Warning: Low stock for {$inventory->chemical->chemical_name}",
-            ]);
-        }
+        // if (Inventory::where('chemical_id', $inventory->chemical_id)->count() < 2) { // Adjust threshold as needed
+        //     Alert::create([
+        //         'inventory_id' => $inventory->id,
+        //         // 'user_id' => '1',
+        //         'message' => "Warning: Low stock for {$inventory->chemical->chemical_name}",
+        //         'receiver_type' => 'admin',
+        //     ]);
+        // }
 
         if ($inventory->quantity <= 0) {
-            $inventory->update(['status' => 'disabled']);
+            $inventory->update(['status' => 'empty']);
             // $inventory->status = 'disabled'; // Mark inventory as disabled
             // $inventory->save();
 
             // Notify admin of depletion
+            // $userRequest = auth()->user()->userRequests()->create([
+            $userRequest = UserRequest::create([
+                // 'inventory_id' => $inventory->id,
+                // 'user_id' => auth()->id(),
+                'type' => 'inventory',
+                'item_id' => $inventory->id,
+                'request' => "Container for one of {$inventory->chemical->chemical_name} ({$inventory->chemical->CAS_number}): {$inventory->serial_number} Container #{$inventory->container_number} is depleted.
+                                Please throw out the container.",
+                'receiver_type' => 'admin',
+            ]);
+
             Alert::create([
-                'inventory_id' => $inventory->id,
-                'user_id' => auth()->id(),
-                'message' => "Inventory for {$inventory->chemical->chemical_name} is depleted. Admin should review and delete if necessary.",
+                // 'inventory_id' => $inventory->id,
+                // 'user_id' => auth()->id(),
+                'user_request_id' => $userRequest->id,
+                'message' => $userRequest['request'],
+                'receiver_type' => $userRequest['receiver_type'],
             ]);
         } else {
             $inventory->save();
+        }
+
+        $totalQuantity = Inventory::where('serial_number', $inventory->serial_number)->sum('quantity');
+        $serial = SerialNumber::where('serial_number', $inventory->serial_number)->first();
+
+        if ($totalQuantity < $inventory->min_quantity && $serial && $serial->status !== 'notified') {
+            // $userRequest = auth()->user()->userRequests()->create([
+            $userRequest = UserRequest::create([
+                // 'inventory_id' => $inventory->id,
+                // 'user_id' => auth()->id(),
+                'type' => 'inventory',
+                'item_id' => $inventory->id,
+                'request' => "Warning: Threshold reached for {$inventory->chemical->chemical_name} ({$inventory->chemical->CAS_number}): {$inventory->serial_number}.
+                                Please restock as soon as possible.",
+                'receiver_type' => 'admin',
+            ]);
+            Alert::create([
+                'inventory_id' => $inventory->id,
+                // 'user_id' => auth()->id(),
+                'user_request_id' => $userRequest->id,
+                'message' => $userRequest['request'],
+                'receiver_type' => $userRequest['receiver_type'],
+            ]);
+
+            $serial->status = 'notified';
+            $serial->save();
         }
 
         return redirect('/i/'.$chemical)->with('success', 'Quantity reduced successfully');
     }
 
     public function destroy(Inventory $inventory) {
-        if ($inventory->status == 'disabled') {
+        $this->authorize('delete', $inventory);
+
+        if ($inventory->status == 'empty') {
             $inventory->delete();
             return back()->with('success', 'Depleted inventory deleted successfully.');
         }
@@ -387,28 +634,59 @@ class InventoriesController extends Controller
         return back()->with('error', 'Inventory must be disabled before deletion.');
     }
 
-    public function inventoryLog() {
-        $this->authorize('viewAny', InventoryUsage::class);
-        $inventoryUsage = InventoryUsage::with('inventory.chemical.user')->latest()->paginate(3);
-        // dd($inventoryUsage);
-        return view('inventories.inventoryLog', compact('inventoryUsage'));
-    }
+    // public function showAlerts(){
+    //     $this->authorize('viewAny', InventoryUsage::class);
+    //     $alerts = Alert::where('is_read', false)->latest()->paginate(3);
+    //     return view('miscs.alert', compact('alerts'));
+    // }
 
-    public function showAlerts(){
-        $this->authorize('viewAny', InventoryUsage::class);
-        $alerts = Alert::where('is_read', false)->latest()->paginate(3);
-        return view('inventories.alert', compact('alerts'));
-    }
-
-    public function markAsRead(Alert $alert){
-        $alert->update(['is_read' => true]);
-        return redirect()->back()->with('success', 'Alert marked as read');
-    }
+    // public function markAsRead(Alert $alert){
+    //     $alert->update(['is_read' => true]);
+    //     return redirect()->back()->with('success', 'Alert marked as read');
+    // }
 
     public function unseal(Inventory $inventory) {
+        $this->authorize('unseal', Inventory::class);
         // $inventory = Inventory::findOrFail($id);
         // dd($inventory->id);
-        $inventory->update(['status' => 'enabled']);
+        $inventory->update(['status' => 'opened']);
         return back()->with('success', 'Inventory unsealed successfully.');
     }
+
+    // public function editThreshold(Inventory $inventory) {
+
+    //     return view('inventories.inventoryThreshold', compact('inventory'));
+    // }
+
+    // public function getByChemical(Chemical $chemical) {
+    //     $inventories = Inventory::where('chemical_id', $chemical)->get();
+
+    //     return response()->json($inventories);
+    // }
+
+    // public function storeThreshold(Inventory $inventory) {
+    //     // $data = request()->validate([
+    //     //     'chemical_id' => ['required|exists:chemicals,id'],
+    //     //     'id' => ['required|exists:inventories,id'],
+    //     //     'min_quantity' => ['required', 'numeric'],
+    //     // ]);
+
+    //     // Inventory::where('id', $data['id'])->update([
+    //     //     'min_quantity' => $data['min_quantity'],
+    //     // ]);
+
+    //     // return back()->with('success', 'Threshold set successfully');
+    //     $data = request()->validate([
+    //         'min_quantity' => ['required', 'numeric'],
+    //     ]);
+
+    //     // dd($inventory);
+
+
+    //     // $inventory->update($data);
+    //     Inventory::where('serial_number', $inventory->serial_number)
+    //                 ->update(['min_quantity' => $data['min_quantity']]);
+
+    //     return redirect('/i/'.$inventory->chemical->id)->with('success', 'Chemical Container threshold updated successfully');
+    // }
 }

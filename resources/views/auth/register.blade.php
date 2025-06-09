@@ -61,7 +61,7 @@
                             </div>
                         </div>
 
-                        <input type="hidden" name="role" value="faculty">
+                        <input type="hidden" name="role" value="FACULTY">
 
                         <div class="row mb-0">
                             <div class="col-md-6 offset-md-4">

@@ -13,7 +13,8 @@ class InventoryUsagePolicy
      */
     public function viewAny(User $user): bool
     {
-        return str_ends_with($user->email, '@admin.com');
+        // return str_ends_with($user->email, '@admin.com');
+        return $user->role === config('roles.admin');
     }
 
     /**

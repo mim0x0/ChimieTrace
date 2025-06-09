@@ -15,20 +15,27 @@ return new class extends Migration
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('user_id')->index();
-            $table->foreignId('chemical_id')->index();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('chemical_id')->constrained()->index();
+
             $table->string('description')->nullable();
-            $table->string('brand')->nullable();
-            $table->string('status')->nullable()->default('sealed');
             $table->string('location')->nullable();
+            $table->string('packaging_type')->nullable();
             $table->decimal('quantity')->nullable();
-            $table->string('notes')->nullable();
-            $table->string('buy_status')->nullable();
+            $table->string('unit')->nullable();
             $table->integer('min_container')->nullable();
             $table->decimal('min_quantity')->nullable();
+            $table->string('status')->nullable()->default('sealed');
             $table->date('acq_at')->nullable();
             $table->date('exp_at')->nullable();
             $table->string('add_by')->nullable();
+            $table->string('brand')->nullable();
+            $table->string('notes')->nullable();
+            $table->string('serial_number');
+            $table->integer('container_number');
+
+
+            $table->string('buy_status')->nullable();
 
             $table->timestamps();
 

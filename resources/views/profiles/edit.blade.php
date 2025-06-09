@@ -1,121 +1,76 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-<form action="/profile/{{ $user->id }}" enctype="multipart/form-data" method="post">
+<div class="container py-5">
+    <form action="/profile/{{ $user->id }}" enctype="multipart/form-data" method="post" class="needs-validation" novalidate>
         @csrf
         @method('PATCH')
 
-        <div class="row">
-            <div class="col-8 offset-2">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-header bg-primary text-white rounded-top-4">
+                        <h4 class="mb-0">Edit Profile</h4>
+                    </div>
 
-                <div class="row">
-                    <h1>Edit Profile</h1>
-                </div>
+                    <div class="card-body p-4">
+                        {{-- Name --}}
+                        <div class="mb-3">
+                            <label for="user_name" class="form-label fw-semibold">Name</label>
+                            <input id="user_name" type="text" class="form-control @error('user_name') is-invalid @enderror" name="user_name" value="{{ old('user_name') ?? $user->name }}" required>
+                            @error('user_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                <div class="row mb-3">
-                    <label for="user_name" class="col-md-4 col-form-label">Name</label>
+                        {{-- Email --}}
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold">Email</label>
+                            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') ?? $user->email }}" required>
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                    <input id="user_name"
-                            type="text"
-                            class="form-control @error('user_name') is-invalid @enderror"
-                            name="user_name"
-                            value="{{ old('user_name') ?? $user->name }}"
-                            required autocomplete="user_name" autofocus>
+                        {{-- Status --}}
+                        <div class="mb-3">
+                            <label for="status" class="form-label fw-semibold">Status</label>
+                            <input id="status" type="text" class="form-control @error('status') is-invalid @enderror" name="status" value="{{ old('status') ?? $user->profile->status }}" readonly>
+                            @error('status')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                    @error('user_name')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+                        {{-- Phone Number --}}
+                        <div class="mb-3">
+                            <label for="phone_number" class="form-label fw-semibold">Phone Number</label>
+                            <input id="phone_number" type="text" class="form-control @error('phone_number') is-invalid @enderror" name="phone_number" value="{{ old('phone_number') ?? $user->profile->phone_number }}">
+                            @error('phone_number')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                </div>
+                        {{-- Profile Picture --}}
+                        <div class="mb-4">
+                            <label for="profile_pic" class="form-label fw-semibold">Profile Picture</label>
+                            <input type="file" class="form-control @error('profile_pic') is-invalid @enderror" id="profile_pic" name="profile_pic">
+                            @error('profile_pic')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                <div class="row mb-3">
-                    <label for="email" class="col-md-4 col-form-label">Email</label>
+                        {{-- Submit --}}
 
-                    <input id="email"
-                            type="text"
-                            class="form-control @error('email') is-invalid @enderror"
-                            name="email"
-                            value="{{ old('email') ?? $user->email }}"
-                            required autocomplete="email" autofocus>
 
-                    @error('email')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-
-                </div>
-
-                <div class="row mb-3">
-                    <label for="status" class="col-md-4 col-form-label">Status</label>
-
-                    <input id="status"
-                            type="text"
-                            class="form-control @error('status') is-invalid @enderror"
-                            name="status"
-                            value="{{ old('status') ?? $user->profile->status }}"
-                            required autocomplete="status" autofocus>
-
-                    @error('status')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-
-                </div>
-
-                <div class="row mb-3">
-                    <label for="phone_number" class="col-md-4 col-form-label">Phone Number</label>
-
-                    <input id="phone_number"
-                            type="text"
-                            class="form-control @error('phone_number') is-invalid @enderror"
-                            name="phone_number"
-                            value="{{ old('phone_number') ?? $user->profile->phone_number }}"
-                            required autocomplete="phone_number" autofocus>
-
-                    @error('phone_number')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-
-                </div>
-
-                {{-- <div class="row mb-3">
-                    <label for="score" class="col-md-4 col-form-label">Score</label>
-
-                    <input id="score"
-                            type="text"
-                            class="form-control @error('score') is-invalid @enderror"
-                            name="score"
-                            value="{{ old('score') ?? $user->profile->score }}"
-                            required autocomplete="score" autofocus>
-
-                    @error('score')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-
-                </div> --}}
-
-                <div class="row">
-                    <label for="profile_pic" class="col-md-4 col-form-label">Profile Picture</label>
-                    <input type="file" class="form-input" id="profile_pic" name="profile_pic">
-
-                    @error('profile_pic')
-                        <!-- <span class="invalid-feedback" role="alert"> -->
-                            <strong>{{ $message }}</strong>
-                        <!-- </span> -->
-                    @enderror
-                </div>
-
-                <div class="row pt-4 col-2">
-                    <button class="btn btn-primary">Save Profile</button>
+                        <div class="d-flex justify-content-end pt-3">
+                            <div class="mx-2">
+                                <a href="{{ route('profile.show', $user->id) }}" class="btn btn-lg btn-secondary px-4 shadow-sm">Back</a>
+                            </div>
+                            <div class="text-end">
+                                <button class="btn btn-primary px-4">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

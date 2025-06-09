@@ -8,7 +8,7 @@ class Alert extends Model
 {
     protected $fillable = [
         'inventory_id', 'message', 'is_read', 'current_overall_quantity', 'current_containers',
-        'user_id,'
+        'user_id', 'receiver_type', 'user_request_id',
     ];
 
     public function inventory() {
@@ -17,5 +17,9 @@ class Alert extends Model
 
     public function user() {
         return $this->belongsTo(User::class);
+    }
+
+    public function userRequest() {
+        return $this->belongsTo(UserRequest::class);
     }
 }

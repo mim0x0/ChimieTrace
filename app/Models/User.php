@@ -3,14 +3,68 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Models\Activity;
+use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly($this->fillable)
+            ->logOnlyDirty()
+            ->useLogName('user')
+            ->setDescriptionForEvent(fn(string $eventName) => $this->getDescriptionForEvent($eventName));
+    }
+
+    public function getDescriptionForEvent(string $eventName) {
+        $user = $this->name ? $this->name : 'System';
+
+        $base = match ($eventName) {
+            'created' => "$user created their account",
+            'updated' => "$user updated their account",
+            'deleted' => "$user deleted their account",
+            default => "$user performed $eventName on their account",
+        };
+
+    //     if ($eventName === 'updated') {
+    //     $changes = collect($this->getChanges());
+    //     $original = $this->getOriginal();
+
+    //     $excluded = ['updated_at', 'created_at'];
+    //     $filtered = $changes->except($excluded);
+
+    //     // if ($filtered->isNotEmpty()) {
+    //     //     $fieldsChanged = $filtered->map(function ($new, $key) use ($original) {
+    //     //         $old = $original[$key] ?? 'N/A';
+    //     //         return "$key: '$old' -> '$new'";
+    //     //     })->implode(', ');
+
+    //     //     $base .= " \n--- Changed: $fieldsChanged";
+    //     // }
+    // }
+    return $base;
+    }
+
+    public function tapActivity(Activity $activity, string $eventName){
+        if (auth()->check()) {
+            $activity->properties = $activity->properties->merge([
+                'custom' => array_merge(
+                    $activity->properties->get('custom', []),
+                    ['causer_name' => auth()->user()->name,]
+                ),
+                // 'causer_name' => auth()->user()->name,
+                // 'causer_email' => auth()->user()->email,
+            ]);
+        }
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +77,8 @@ class User extends Authenticatable
         'password',
         'role',
         'paypal_email',
+        'banned_at',
+        // 'status',
     ];
 
     /**
@@ -48,16 +104,16 @@ class User extends Authenticatable
         ];
     }
 
-    protected static function boot() {
-        parent::boot();
+    // protected static function boot() {
+    //     parent::boot();
 
-        static::created(function ($user) {
-            $user->profile()->create([
-                'status' => 'Active',
-                'score' => '100',
-            ]);
-        });
-    }
+    //     static::created(function ($user) {
+    //         $user->profile()->create([
+    //             'status' => 'Active',
+    //             // 'score' => '100',
+    //         ]);
+    //     });
+    // }
 
     public function profile() {
         return $this->hasOne(Profile::class);
@@ -86,4 +142,21 @@ class User extends Authenticatable
     public function isSupplier() {
         return $this->role === 'supplier';
     }
+
+    public function userRequests() {
+        return $this->hasMany(UserRequest::class);
+    }
+
+    public function cart() {
+        return $this->hasOne(Cart::class);
+    }
+
+    public function bids() {
+        return $this->hasMany(Bid::class);
+    }
+
+    // public function receivedCarts() {
+    //     return $this->hasMany(Cart::class, 'supplier_id');
+    // }
+
 }

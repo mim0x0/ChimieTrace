@@ -33,10 +33,12 @@ class RegisterController extends Controller
      * @var string
      */
     protected function redirectTo(){
-        if (auth()->user()->role === 'faculty') {
+        if (auth()->user()->role === config('roles.faculty')) {
             return '/inventory';
-        } elseif (auth()->user()->role === 'supplier') {
+        } elseif (auth()->user()->role === config('roles.supplier')) {
             return '/market';
+        } elseif (auth()->user()->role === config('roles.admin')) {
+            return '/inventory';
         }
 
         return '/';
@@ -64,9 +66,9 @@ class RegisterController extends Controller
     {
         $role = $data['role'] ?? null;
 
-        if ($role === 'faculty') {
+        if ($role === config('roles.faculty')) {
             Validator::extend('faculty_email', function($attribute, $value, $parameters, $validator){
-                return preg_match('/@(student|lecturer|admin)\.com$/', $value);
+                return preg_match('/@(student|lecturer)\.com$/', $value);
             });
 
             $email = ['required', 'string', 'email', 'max:255', 'unique:users', 'faculty_email'];
@@ -78,8 +80,8 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => $email,
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:faculty,supplier'],
-            'paypal_email' => ['nullable'],
+            'role' => ['required', 'in:FACULTY,SUPPLIER,ADMIN'],
+            'phone_number' => ['nullable'],
         ]);
     }
 
@@ -91,14 +93,21 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
         // $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'role' => $data['role'],
-            'paypal_email' => $data['paypal_email'] ?? '',
+            // 'phone_number' => $data['phone_number'] ?? '',
         ]);
+
+        $user->profile()->create([
+            'status' => 'Active',
+            'phone_number' => $data['phone_number'] ?? null,
+        ]);
+
+        return $user;
 
         // if ($user->role === 'supplier') {
         //     Stripe::setApiKey(config('stripe.sk'));

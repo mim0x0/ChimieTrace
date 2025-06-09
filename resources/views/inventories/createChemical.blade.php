@@ -1,204 +1,143 @@
+
+
+
 @extends('layouts.app')
 
 @section('content')
 <div class="container">
-
-    <form action="/i/chemical" enctype="multipart/form-data" method="post">
-        @csrf
-
-        <div class="row">
-            <div class="col-8 offset-2">
-
-                <div class="row">
-                    <h1>Add New Chemical</h1>
-                </div>
-
-                <div class="row mb-3">
-                    <label for="chemical_name" class="col-md-4 col-form-label">Chemical Name</label>
-
-                    <input id="chemical_name"
-                            type="text"
-                            class="form-control @error('chemical_name') is-invalid @enderror"
-                            name="chemical_name"
-                            value="{{ old('chemical_name') }}"
-                            required autocomplete="chemical_name" autofocus>
-
-                    @error('chemical_name')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-
-                </div>
-
-                <div class="row">
-                    <label for="image" class="col-md-4 col-form-label">Chemical Image</label>
-                    <input type="file" class="form-input" id="image" name="image">
-
-                    @error('image')
-                        <!-- <span class="invalid-feedback" role="alert"> -->
-                            <strong>{{ $message }}</strong>
-                        <!-- </span> -->
-                    @enderror
-                </div>
-
-                <div class="row">
-                    <label for="chemical_structure" class="col-md-4 col-form-label">Chemical Structure</label>
-                    <input type="file" class="form-input" id="chemical_structure" name="chemical_structure">
-
-                    @error('chemical_structure')
-                        {{-- <span class="invalid-feedback" role="alert"> --}}
-                            <strong>{{ $message }}</strong>
-                        {{-- </span> --}}
-                    @enderror
-                </div>
-
-                <div class="row mb-3">
-                    <label for="CAS_number" class="col-md-4 col-form-label">CAS Number</label>
-                    <input id="CAS_number"
-                            type="text"
-                            class="form-control @error('CAS_number') is-invalid @enderror"
-                            name="CAS_number"
-                            value="{{ old('CAS_number') }}"
-                            required autocomplete="CAS_number" autofocus>
-                    @error('CAS_number')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-
-                <div class="row mb-3">
-                    <label for="serial_number" class="col-md-4 col-form-label">Serial Number</label>
-                    <input id="serial_number"
-                            type="text"
-                            class="form-control @error('serial_number') is-invalid @enderror"
-                            name="serial_number"
-                            value="{{ old('serial_number') }}"
-                            required autocomplete="serial_number" autofocus>
-                    @error('serial_number')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-
-                {{-- <div class="row mb-3">
-                    <label for="location" class="col-md-4 col-form-label">Location</label>
-                    <input id="location"
-                            type="text"
-                            class="form-control @error('location') is-invalid @enderror"
-                            name="location"
-                            value="{{ old('location') }}"
-                            required autocomplete="location" autofocus>
-                    @error('location')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div> --}}
-
-                {{-- <div class="row mb-3">
-                    <label for="quantity" class="col-md-4 col-form-label">Quantity</label>
-                    <input id="quantity"
-                            type="number"
-                            step="0.01"
-                            class="form-control @error('quantity') is-invalid @enderror"
-                            name="quantity"
-                            value="{{ old('quantity') }}"
-                            required autocomplete="quantity" autofocus>
-                    @error('quantity')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div> --}}
-
-                <div class="row mb-3">
-                    <label for="SKU" class="col-md-4 col-form-label">SKU</label>
-                    <input id="SKU"
-                            type="text"
-                            class="form-control @error('SKU') is-invalid @enderror"
-                            name="SKU"
-                            value="{{ old('SKU') }}"
-                            required autocomplete="SKU" autofocus>
-                    @error('SKU')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-
-                {{-- <div class="row mb-3">
-                    <label for="acq_at" class="col-md-4 col-form-label">Acquired At</label>
-                    <input id="acq_at"
-                            type="date"
-                            class="form-control @error('acq_at') is-invalid @enderror"
-                            name="acq_at"
-                            value="{{ old('acq_at', now()->toDateString()) }}"
-                            required autocomplete="acq_at" autofocus>
-                    @error('acq_at')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
-
-                <div class="row mb-3">
-                    <label for="exp_at" class="col-md-4 col-form-label">Expired At</label>
-                    <input id="exp_at"
-                            type="date"
-                            class="form-control @error('exp_at') is-invalid @enderror"
-                            name="exp_at"
-                            value="{{ old('exp_at') }}"
-                            required autocomplete="exp_at" autofocus>
-                    @error('exp_at')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div> --}}
-
-                {{-- <div class="mb-3">
-                    <label for="SDS_file" class="col-md-4 col-form-label">Upload SDS file</label>
-                    <input id="SDS_file"
-                            type="file"
-                            class="form-control"
-                            name="SDS_file" accept=".pdf">
-                </div> --}}
-
-                <div class="row">
-                    <label for="SDS_file" class="col-md-4 col-form-label">Upload SDS</label>
-                    <input type="file" class="form-input" id="SDS_file" name="SDS_file">
-
-                    @error('SDS_file')
-                        {{-- <span class="invalid-feedback" role="alert"> --}}
-                            <strong>{{ $message }}</strong>
-                        {{-- </span> --}}
-                    @enderror
-                </div>
-
-                {{-- <div class="row mb-3">
-                    <label for="reg_by" class="col-md-4 col-form-label">Registered by</label>
-                    <input id="reg_by"
-                            type="text"
-                            class="form-control @error('reg_by') is-invalid @enderror"
-                            name="reg_by"
-                            value="{{ old('reg_by') }}"
-                            required autocomplete="reg_by" autofocus>
-                    @error('reg_by')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div> --}}
-
-                <div class="row pt-4 col-2">
-                    <button class="btn btn-primary">Add new chemical</button>
-                </div>
-            </div>
+    {{-- <div class="card shadow-sm p-4 bg-white rounded">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Add New Chemical</h4>
         </div>
-    </form>
+        <div class="card-body"> --}}
+            <form action="/i/chemical" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                @csrf
 
+                <div class="card shadow-lg border-0">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4 text-primary fw-bold">Add New Chemical Item</h2>
+
+                        {{-- Chemical Name --}}
+                        <div class="mb-4 row align-items-center">
+                            <label for="chemical_name" class="col-md-3 col-form-label fw-semibold text-secondary">Chemical Name</label>
+                            <div class="col-md-9">
+                                <input id="chemical_name" type="text" name="chemical_name"
+                                    class="form-control @error('chemical_name') is-invalid @enderror"
+                                    value="{{ old('chemical_name') }}" required autofocus>
+                                @error('chemical_name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- CAS Number --}}
+                        <div class="mb-4 row align-items-center">
+                            <label for="CAS_number" class="col-md-3 col-form-label fw-semibold text-secondary">CAS Number</label>
+                            <div class="col-md-9">
+                                <input id="CAS_number" type="text" name="CAS_number"
+                                    class="form-control @error('CAS_number') is-invalid @enderror"
+                                    value="{{ old('CAS_number') }}" required>
+                                @error('CAS_number')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Empirical Structure --}}
+                        <div class="mb-4 row align-items-center">
+                            <label for="empirical_formula" class="col-md-3 col-form-label fw-semibold text-secondary">Empirical Structure</label>
+                            <div class="col-md-9">
+                                <input id="empirical_formula" type="text" name="empirical_formula"
+                                    class="form-control @error('empirical_formula') is-invalid @enderror"
+                                    value="{{ old('empirical_formula') }}" required>
+                                @error('empirical_formula')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- EC Number --}}
+                        <div class="mb-4 row align-items-center">
+                            <label for="ec_number" class="col-md-3 col-form-label fw-semibold text-secondary">EC Number</label>
+                            <div class="col-md-9">
+                                <input id="ec_number" type="text" name="ec_number"
+                                    class="form-control @error('ec_number') is-invalid @enderror"
+                                    value="{{ old('ec_number') }}" required>
+                                @error('ec_number')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- moldecular weight --}}
+                        <div class="mb-4 row align-items-center">
+                            <label for="molecular_weight" class="col-md-3 col-form-label fw-semibold text-secondary">Molecular Weight</label>
+                            <div class="col-md-9">
+                                <input id="molecular_weight" type="number" step="0.01" name="molecular_weight"
+                                    class="form-control @error('molecular_weight') is-invalid @enderror"
+                                    value="{{ old('molecular_weight') }}" required>
+                                @error('molecular_weight')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{--  --}}
+                        {{-- <div class="mb-4 row align-items-center">
+                            <label for="image" class="form-label fw-semibold text-secondary">Chemical Image</label>
+                            <input type="file" class="form-control" id="image" name="image">
+                            @error('image')
+                                <div class="text-danger"><strong>{{ $message }}</strong></div>
+                            @enderror
+                        </div> --}}
+
+                        <div class="mb-4 row align-items-center">
+                            <label for="chemical_structure" class="form-label fw-semibold text-secondary">Chemical Structure</label>
+                            <input type="file" class="form-control" id="chemical_structure" name="chemical_structure">
+                            @error('chemical_structure')
+                                <div class="text-danger"><strong>{{ $message }}</strong></div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4 row align-items-center">
+                            <label for="SDS_file" class="form-label fw-semibold text-secondary">Upload SDS</label>
+                            <input type="file" class="form-control" id="SDS_file" name="SDS_file" accept=".pdf">
+                            @error('SDS_file')
+                                <div class="text-danger"><strong>{{ $message }}</strong></div>
+                            @enderror
+                        </div>
+
+                        {{-- Submit Button --}}
+                        <div class="d-flex justify-content-end pt-3">
+                            <div class="mx-2">
+                                <a href="{{ route('inventory.index') }}" class="btn btn-lg btn-secondary px-4 shadow-sm">Back</a>
+                            </div>
+                            <button type="submit" class="btn btn-lg btn-primary px-4 shadow-sm">
+                                <i class="bi bi-plus-circle me-2"></i> Add New Container
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </form>
+        {{-- </div>
+    </div> --}}
 </div>
+
+<script>
+(() => {
+  'use strict';
+  const forms = document.querySelectorAll('.needs-validation');
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', e => {
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  });
+})();
+</script>
 @endsection
