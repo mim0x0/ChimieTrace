@@ -24,10 +24,10 @@ class Market extends Model
         $user = auth()->check() ? auth()->user()->name : 'System';
 
         $base = match ($eventName) {
-            'created' => "{$this->chemical->chemical_name} Description: {$this->inventory->description}",
-            'updated' => "{$this->chemical->chemical_name} Description: {$this->inventory->description}",
-            'deleted' => "{$this->chemical->chemical_name} Description: {$this->inventory->description}",
-            default => "$user performed $eventName on chemical product for sale: {$this->chemical->chemical_name} Description: {$this->inventory->description}",
+            'created' => "{$this->chemical->chemical_name} ({$this->inventory->serial_number})",
+            'updated' => "{$this->chemical->chemical_name} ({$this->inventory->serial_number})",
+            'deleted' => "{$this->chemical->chemical_name} ({$this->inventory->serial_number})",
+            default => "$user performed $eventName on chemical product for sale: {$this->chemical->chemical_name} ({$this->inventory->serial_number})",
         };
 
     //     if ($eventName === 'updated') {
@@ -64,8 +64,8 @@ class Market extends Model
 
     protected $fillable =
     [
-        'inventory_id', 'description', 'chemical_id', 'user_id', 'price', 'currency', 'stock',
-        'quantity_needed', 'notes', 'deadline', 'unit',
+        'inventory_id', 'description', 'chemical_id', 'user_id', 'price', 'currency', 'stock_needed',
+        'quantity_needed', 'notes', 'deadline', 'unit', 'packaging_type'
     ];
 
     public function user() {

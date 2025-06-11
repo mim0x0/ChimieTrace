@@ -11,19 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bids', function (Blueprint $table) {
+        Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            // $table->foreignId('inventory_id')->nullable();
-            $table->foreignId('market_id')->nullable()->constrained()->cascadeOnDelete();
-
-            $table->decimal('price')->nullable();
-            $table->integer('quantity')->nullable();
-            $table->integer('stock')->nullable();
-            $table->string('delivery')->nullable(); /////////delivery timeline
-            $table->string('notes')->nullable();
+            $table->foreignId('supplier_id')->constrained('users')->cascadeOnDelete();
+            $table->string('supplier_name');
+            $table->string('supplier_phone');
             $table->string('status')->default('pending');
+            $table->decimal('total', 10, 2)->default(0);
+            $table->string('po_number')->unique();
+            $table->date('delivery_date')->nullable();
+            $table->text('terms')->nullable();
 
             $table->timestamps();
         });
@@ -34,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bids');
+        Schema::dropIfExists('purchase_orders');
     }
 };

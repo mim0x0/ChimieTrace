@@ -27,5 +27,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'Active',
             'phone_number' => $data['phone_number'] ?? null,
         ]);
+
+        $this->call(RegisteredChemicalSeeder::class);
     }
 }

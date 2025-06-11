@@ -200,28 +200,64 @@ class MiscsController extends Controller
         return view('miscs.log', compact('activities', 'type'));
     }
 
-    public function showAlerts(Request $request){
+    public function showAlerts(Request $request, $type = null){
         $this->authorize('viewAny', Alert::class);
-        // $this->authorize('viewAny', InventoryUsage::class);
 
         $query = $request->input('search');
-
         $filters = $request->input('filters', []);
 
-        $alerts = Alert::where('message', 'LIKE', "%{$query}%")
-                ->where('is_read', false)
-                ->latest()
-                // ->orWhere('serial_number', 'LIKE', "%{$query}%")
-                // ->orWhere('SKU', 'LIKE', "%{$query}%")
-                ->paginate(10);
+        $alertQuery = Alert::with('userRequest')
+            ->where('is_read', false)
+            ->latest();
 
-        if ($request->ajax()) {
-            return view('miscs._searchAlert', compact('alerts'))->render();
+        // Type filtering: chemical, market, user
+        if ($type) {
+            $alertQuery->whereHas('userRequest', function ($q) use ($type) {
+                if ($type === 'chemical') {
+                    $q->whereIn('type', ['chemical', 'inventory']);
+                } else {
+                    $q->where('type', $type);
+                }
+            });
         }
 
-        // $alerts = Alert::where('is_read', false)->latest()->paginate(3);
-        return view('miscs.alert', compact('alerts'));
+        // Search filtering
+        if ($query) {
+            $alertQuery->where('message', 'LIKE', "%{$query}%");
+        }
+
+        $alerts = $alertQuery->paginate(10);
+
+        // AJAX partial return
+        if ($request->ajax()) {
+            return view('miscs._searchAlert', compact('alerts', 'type'))->render();
+        }
+
+        return view('miscs.alert', compact('alerts', 'type'));
     }
+
+    // public function showAlerts(Request $request){
+    //     $this->authorize('viewAny', Alert::class);
+    //     // $this->authorize('viewAny', InventoryUsage::class);
+
+    //     $query = $request->input('search');
+
+    //     $filters = $request->input('filters', []);
+
+    //     $alerts = Alert::where('message', 'LIKE', "%{$query}%")
+    //             ->where('is_read', false)
+    //             ->latest()
+    //             // ->orWhere('serial_number', 'LIKE', "%{$query}%")
+    //             // ->orWhere('SKU', 'LIKE', "%{$query}%")
+    //             ->paginate(10);
+
+    //     if ($request->ajax()) {
+    //         return view('miscs._searchAlert', compact('alerts'))->render();
+    //     }
+
+    //     // $alerts = Alert::where('is_read', false)->latest()->paginate(3);
+    //     return view('miscs.alert', compact('alerts'));
+    // }
 
     // public function alertRedirect(Alert $request){
     //     switch ($request->type) {
@@ -252,6 +288,8 @@ class MiscsController extends Controller
             $chemical = Chemical::where('id', $alert->userRequest->item_id)->first();
             // dd($inventory);
             return redirect()->route('inventory.detail', ['chemical' => $inventory ? $inventory->chemical->id : $chemical->id]);
+        } elseif ($alert->userRequest->type === 'market' && $alert->userRequest->item_id === -2) {
+            return redirect()->route('cart.orders');
         } elseif ($alert->userRequest->type === 'market') {
             // $market = Market::where('id', $alert->userRequest->item_id)->first();
             return redirect()->route('market.detail', ['markets' => $alert->userRequest->item_id]);

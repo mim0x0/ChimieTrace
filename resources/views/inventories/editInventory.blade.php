@@ -9,11 +9,11 @@
 
         <div class="card shadow-lg border-0">
             <div class="card-body">
-                <h2 class="card-title mb-4 text-primary fw-bold">Topup Chemical Container</h2>
+                <h2 class="card-title mb-4 text-primary fw-bold">Edit Chemical Container</h2>
 
                 {{-- Select Chemical --}}
                 <div class="mb-4 row align-items-center">
-                    <label for="chemical_id" class="col-md-3 col-form-label fw-semibold text-secondary">Select Chemical</label>
+                    <label for="chemical_id" class="col-md-3 col-form-label fw-semibold text-secondary">Chemical Name</label>
                     <div class="col-md-9">
                         <select id="chemical_id" name="chemical_id" class="form-select @error('chemical_id') is-invalid @enderror" required>
                             {{-- @foreach ($chemicals as $chemical) --}}
@@ -26,8 +26,21 @@
                     </div>
                 </div>
 
-                {{-- Description --}}
+                {{-- Serial Number --}}
                 <div class="mb-4 row align-items-center">
+                    <label for="serial_number" class="col-md-3 col-form-label fw-semibold text-secondary">Variant</label>
+                    <div class="col-md-9">
+                        <input id="serial_number" type="text" name="serial_number"
+                            class="form-control @error('serial_number') is-invalid @enderror"
+                            value="{{ old('serial_number') ?? $inventory->serial_number }}" required>
+                        @error('serial_number')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                {{-- Description --}}
+                {{-- <div class="mb-4 row align-items-center">
                     <label for="description" class="col-md-3 col-form-label fw-semibold text-secondary">Description</label>
                     <div class="col-md-9">
                         <input id="description" type="text" name="description"
@@ -37,7 +50,7 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                </div>
+                </div> --}}
 
                 {{-- Location --}}
                 <div class="mb-4 row align-items-center">
@@ -71,8 +84,16 @@
                         <label for="packaging_type" class="form-label fw-semibold text-secondary">Packaging Type</label>
                         <select id="packaging_type" name="packaging_type" class="form-select">
                             <option value="{{ $inventory->packaging_type }}" selected>{{ $inventory->packaging_type }}</option>
+                            <option value="Vial" {{ old('packaging_type') == 'Vial' ? 'selected' : '' }}>Vial</option>
+                            <option value="Canister" {{ old('packaging_type') == 'Canister' ? 'selected' : '' }}>Canister</option>
+                            <option value="Drum" {{ old('packaging_type') == 'Drum' ? 'selected' : '' }}>Drum</option>
                             <option value="Bag" {{ old('packaging_type') == 'Bag' ? 'selected' : '' }}>Bag</option>
                             <option value="Bottle" {{ old('packaging_type') == 'Bottle' ? 'selected' : '' }}>Bottle</option>
+                            <option value="Ampoule" {{ old('packaging_type') == 'Ampoule' ? 'selected' : '' }}>Ampoule</option>
+                            <option value="Tube" {{ old('packaging_type') == 'Tube' ? 'selected' : '' }}>Tube</option>
+                            <option value="Sachet" {{ old('packaging_type') == 'Sachet' ? 'selected' : '' }}>Sachet</option>
+                            <option value="Cylinder" {{ old('packaging_type') == 'Cylinder' ? 'selected' : '' }}>Cylinder</option>
+                            <option value="Jar" {{ old('packaging_type') == 'Jar' ? 'selected' : '' }}>Jar</option>
                         </select>
                     </div>
 
@@ -80,11 +101,11 @@
                         <label for="unit" class="form-label fw-semibold text-secondary">Unit</label>
                         <select id="unit" name="unit" class="form-select">
                             <option value="{{ $inventory->unit }}" selected>{{ $inventory->unit }}</option>
-                            <option value="g" {{ old('unit') == 'g' ? 'selected' : '' }}>g</option>
+                            {{-- <option value="g" {{ old('unit') == 'g' ? 'selected' : '' }}>g</option>
                             <option value="kg" {{ old('unit') == 'kg' ? 'selected' : '' }}>kg</option>
                             <option value="mg" {{ old('unit') == 'mg' ? 'selected' : '' }}>mg</option>
                             <option value="mL" {{ old('unit') == 'mL' ? 'selected' : '' }}>mL</option>
-                            <option value="L" {{ old('unit') == 'L' ? 'selected' : '' }}>L</option>
+                            <option value="L" {{ old('unit') == 'L' ? 'selected' : '' }}>L</option> --}}
                         </select>
                     </div>
                 </div>
@@ -118,7 +139,7 @@
                         <label for="acq_at" class="form-label fw-semibold text-secondary">Acquired At</label>
                         <input id="acq_at" type="date" name="acq_at"
                             class="form-control @error('acq_at') is-invalid @enderror"
-                            value="{{ old('acq_at') ?? $inventory->acq_at }}" required>
+                            value="{{ old('acq_at') ?? $inventory->acq_at }}" required readonly>
                         @error('acq_at')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -150,19 +171,6 @@
                                 <option value="{{ $brand->name }} {{ old('brand') == $brand->name ? 'selected' : '' }}">{{ $brand->name }}</option>
                             @endforeach
                         </select>
-                    </div>
-                </div>
-
-                {{-- Serial Number --}}
-                <div class="mb-4 row align-items-center">
-                    <label for="serial_number" class="col-md-3 col-form-label fw-semibold text-secondary">Serial Number</label>
-                    <div class="col-md-9">
-                        <input id="serial_number" type="text" name="serial_number"
-                            class="form-control @error('serial_number') is-invalid @enderror"
-                            value="{{ old('serial_number') ?? $inventory->serial_number }}" required>
-                        @error('serial_number')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
                     </div>
                 </div>
 
@@ -206,5 +214,78 @@
     }, false);
   });
 })();
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    const oldUnit = "{{ old('unit') }}";
+
+    const unitsByPackaging = {
+        Bottle: ['mL', 'L'],
+        Bag: ['g', 'kg'],
+        Vial: ['mg', 'mL'],
+        Canister: ['L', 'kg'],
+        Drum: ['L', 'kg'],
+        Ampoule: ['mL'],
+        Tube: ['mg', 'g'],
+        Sachet: ['mg', 'g'],
+        Cylinder: ['L', 'm³'],
+        Jar: ['g', 'kg']
+    };
+
+    function populateUnits(selectedType, oldUnitValue = null) {
+        let options = '';
+        if (unitsByPackaging[selectedType]) {
+            unitsByPackaging[selectedType].forEach(unit => {
+                const selected = unit === oldUnitValue ? 'selected' : '';
+                options += `<option value="${unit}" ${selected}>${unit}</option>`;
+            });
+        } else {
+            options = '<option value="">-- Select packaging type first --</option>';
+        }
+        $('#unit').html(options);
+    }
+
+    $(document).ready(function () {
+        const oldPackagingType = "{{ old('packaging_type') }}";
+        if (oldPackagingType) {
+            $('#packaging_type').val(oldPackagingType).trigger('change');
+            populateUnits(oldPackagingType, oldUnit);
+        }
+
+        $('#packaging_type').on('change', function () {
+            const selectedType = $(this).val();
+            populateUnits(selectedType);
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const acqInput = document.getElementById('acq_at');
+        const expInput = document.getElementById('exp_at');
+
+        // Set min date for acq_at = today - 14 days
+        const today = new Date();
+        const fourteenDaysAgo = new Date();
+        fourteenDaysAgo.setDate(today.getDate() - 14);
+        acqInput.setAttribute('min', fourteenDaysAgo.toISOString().split('T')[0]);
+        acqInput.setAttribute('max', today.toISOString().split('T')[0]);
+
+        // Update exp_at min when acq_at changes
+        function updateExpMin() {
+            if (acqInput.value) {
+                expInput.min = acqInput.value;
+            } else {
+                expInput.removeAttribute('min');
+            }
+        }
+
+        acqInput.addEventListener('change', updateExpMin);
+
+        // Trigger on load in case of old value
+        updateExpMin();
+    });
 </script>
 @endsection

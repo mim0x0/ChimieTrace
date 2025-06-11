@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Models\InventoryUsage;
 use Illuminate\Validation\Rule;
 use App\Models\ChemicalProperty;
+use App\Models\RegisteredChemical;
 
 class InventoriesController extends Controller
 {
@@ -36,8 +37,8 @@ class InventoriesController extends Controller
             'chemical_name' => ['required', 'string'],
             'CAS_number' => ['required', 'string', 'unique:chemicals,CAS_number'],
             'empirical_formula' => ['required', 'string'],
-            'molecular_weight' => ['required', 'numeric'],
-            'ec_number' => ['required', 'string'],
+            // 'molecular_weight' => ['required', 'numeric'],
+            // 'ec_number' => ['required', 'string'],
             // 'image' => ['required', 'image'],
             'chemical_structure' => ['required', 'image'],
             'SDS_file' => ['required', 'mimes:pdf'],
@@ -69,9 +70,9 @@ class InventoriesController extends Controller
             auth()->user()->chemicals()->create([
                 'chemical_name' => $data['chemical_name'],
                 'CAS_number' => $data['CAS_number'],
-                'ec_number' => $data['ec_number'],
+                // 'ec_number' => $data['ec_number'],
                 'empirical_formula' => $data['empirical_formula'],
-                'molecular_weight' => $data['molecular_weight'],
+                // 'molecular_weight' => $data['molecular_weight'],
                 // 'image' => $imagePath,
                 'chemical_structure' => $structurePath,
                 'SDS_file' => $SDSPath,
@@ -112,8 +113,8 @@ class InventoriesController extends Controller
             'chemical_name' => ['required', 'string'],
             'CAS_number' => ['required', 'string', Rule::unique('chemicals')->ignore($chemical->id)],
             'empirical_formula' => ['required', 'string'],
-            'molecular_weight' => ['required', 'numeric'],
-            'ec_number' => ['required', 'string'],
+            // 'molecular_weight' => ['required', 'numeric'],
+            // 'ec_number' => ['required', 'string'],
             // 'image' => ['nullable', 'image'],
             'chemical_structure' => ['nullable', 'image'],
             'SDS_file' => ['nullable', 'mimes:pdf'],
@@ -187,7 +188,7 @@ class InventoriesController extends Controller
         $data = request()->validate([
             'chemical_id' => ['required', 'exists:chemicals,id'],
             // 'chemical_name' => ['required', 'required_without:chemical_id'],
-            'description' => ['required', 'string'],
+            // 'description' => ['required', 'string'],
             'serial_number' => ['required', 'string', 'unique:serial_numbers,serial_number'],
             'notes' => ['nullable', 'string'],
             'brand' => ['nullable', 'string'],
@@ -250,7 +251,7 @@ class InventoriesController extends Controller
                 'acq_at' => $data['acq_at'],
                 'exp_at' => $data['exp_at'],
                 'add_by' => auth()->user()->name,
-                'description' => $data['description'],
+                // 'description' => $data['description'],
                 'serial_number' => $data['serial_number'],
                 'notes' => $data['notes'],
                 'brand' => $data['brand'],
@@ -296,7 +297,7 @@ class InventoriesController extends Controller
         $data = request()->validate([
             'chemical_id' => ['required', 'exists:chemicals,id'],
             // 'chemical_name' => ['required', 'required_without:chemical_id'],
-            'description' => ['required', 'string'],
+            // 'description' => ['required', 'string'],
             'serial_number' => ['required', 'string', 'exists:serial_numbers,serial_number'],
             'notes' => ['nullable', 'string'],
             'brand' => ['nullable', 'string'],
@@ -330,7 +331,7 @@ class InventoriesController extends Controller
                 'acq_at' => $data['acq_at'],
                 'exp_at' => $data['exp_at'],
                 'add_by' => auth()->user()->name,
-                'description' => $data['description'],
+                // 'description' => $data['description'],
                 'serial_number' => $data['serial_number'],
                 'notes' => $data['notes'],
                 'brand' => $data['brand'],
@@ -364,8 +365,8 @@ class InventoriesController extends Controller
 
         $data = $request->validate([
             // 'chemical_id' => ['required'],
-            'description' => ['required', 'string'],
-            // 'serial_number' => ['nullable', 'string'],
+            // 'description' => ['required', 'string'],
+            'serial_number' => ['required', 'string'],
             'notes' => ['nullable', 'string'],
             'brand' => ['nullable', 'string'],
 
@@ -405,7 +406,7 @@ class InventoriesController extends Controller
                 ->orWhere('empirical_formula', 'LIKE', "%{$query}%")
                 ->orWhere('ec_number', 'LIKE', "%{$query}%")
                 ->orWhere('molecular_weight', 'LIKE', "%{$query}%")
-                ->paginate(3);
+                ->paginate(10);
 
 
         // $chemicals = Inventory::whereHas('chemical', function ($q) use ($query) {
@@ -578,8 +579,8 @@ class InventoriesController extends Controller
                 // 'user_id' => auth()->id(),
                 'type' => 'inventory',
                 'item_id' => $inventory->id,
-                'request' => "Container for one of {$inventory->chemical->chemical_name} ({$inventory->chemical->CAS_number}): {$inventory->serial_number} Container #{$inventory->container_number} is depleted.
-                                Please throw out the container.",
+                'request' => "Container for one of {$inventory->chemical->chemical_name} ({$inventory->serial_number} #{$inventory->container_number}) is depleted.
+                                Please handle the empty container.",
                 'receiver_type' => 'admin',
             ]);
 
@@ -604,7 +605,7 @@ class InventoriesController extends Controller
                 // 'user_id' => auth()->id(),
                 'type' => 'inventory',
                 'item_id' => $inventory->id,
-                'request' => "Warning: Threshold reached for {$inventory->chemical->chemical_name} ({$inventory->chemical->CAS_number}): {$inventory->serial_number}.
+                'request' => "Warning: Threshold reached for {$inventory->chemical->chemical_name} ({$inventory->serial_number}).
                                 Please restock as soon as possible.",
                 'receiver_type' => 'admin',
             ]);
@@ -634,16 +635,13 @@ class InventoriesController extends Controller
         return back()->with('error', 'Inventory must be disabled before deletion.');
     }
 
-    // public function showAlerts(){
-    //     $this->authorize('viewAny', InventoryUsage::class);
-    //     $alerts = Alert::where('is_read', false)->latest()->paginate(3);
-    //     return view('miscs.alert', compact('alerts'));
-    // }
+    public function autocomplete(Request $request){
+        $query = $request->input('query');
 
-    // public function markAsRead(Alert $alert){
-    //     $alert->update(['is_read' => true]);
-    //     return redirect()->back()->with('success', 'Alert marked as read');
-    // }
+        return RegisteredChemical::where('chemical_name', 'LIKE', "%{$query}%")
+            ->limit(10)
+            ->get(['chemical_name', 'CAS_number', 'empirical_formula']);
+    }
 
     public function unseal(Inventory $inventory) {
         $this->authorize('unseal', Inventory::class);

@@ -6,8 +6,8 @@
 return [
     'admin' => 'ADMIN',
     'faculty' => 'FACULTY',
-    'lecturer' => '@lecturer.com',
-    'student' => '@student.com',
+    'lecturer' => '@lecturer.usm.my',
+    'student' => '@student.usm.my',
     'supplier' => 'SUPPLIER',
 ];
 

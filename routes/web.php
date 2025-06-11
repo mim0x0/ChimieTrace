@@ -43,6 +43,8 @@ Route::delete('/i/i/{inventory}', [MarketsController::class, 'deleteInventory'])
 Route::post('/i/inventory/{chemical}', [InventoriesController::class, 'storeInventory']);
 Route::post('/i/addInventory/{inventory}', [InventoriesController::class, 'storeAddInventory']);
 // Route::get('/i/scrape', [InventoriesController::class, 'scrape']);
+Route::get('/api/registered-chemicals', [InventoriesController::class, 'autocomplete']);
+
 
 // Route::get('/i/threshold', [InventoriesController::class, 'editThreshold'])->name('inventory.threshold.edit');
 // Route::get('/i/threshold/{inventory}', [InventoriesController::class, 'editThreshold'])->name('inventory.threshold.edit');
@@ -55,7 +57,7 @@ Route::delete('/i/{inventory}/delete', [InventoriesController::class, 'destroy']
 Route::get('/i/{chemical}', [InventoriesController::class, 'details'])->name('inventory.detail');
 
 //miscs
-Route::get('/alerts', [MiscsController::class, 'showAlerts'])->name('miscs.alert');
+Route::get('/alerts/{type?}', [MiscsController::class, 'showAlerts'])->name('miscs.alert');
 // Route::get('/alerts/go/{request}', [MiscsController::class, 'alertRedirect'])->name('miscs.alertRedirect');
 Route::post('/alerts/{alert}/increment', [MiscsController::class, 'increment'])->name('alerts.increment');
 Route::get('/alerts/{alert}/read', [MiscsController::class, 'markAsRead']);
@@ -93,9 +95,13 @@ Route::get('/m/{bids}/bid/accept', [MarketsController::class, 'accept'])->name('
 
 
 Route::get('/cart', [MarketsController::class, 'viewCart'])->name('cart.index');
-Route::post('/cart/add/{market}', [MarketsController::class, 'addToCart'])->name('cart.add');
+Route::post('/cart/add/{bids}', [MarketsController::class, 'addToCart'])->name('cart.add');
 Route::patch('/cart/update/{item}', [MarketsController::class, 'updateCart'])->name('cart.update');
-Route::post('/cart/checkout', [MarketsController::class, 'checkout'])->name('cart.checkout');
+Route::post('/cart/{cart}/checkout', [MarketsController::class, 'checkout'])->name('cart.checkout');
+Route::get('/orders', [MarketsController::class, 'orders'])->name('cart.orders');
+Route::patch('/orders/{order}/respond', [MarketsController::class, 'respond'])->name('orders.respond');
+Route::patch('/orders/{order}/done', [MarketsController::class, 'markDone'])->name('orders.markDone');
+
 
 // Route::post('/api/paypal/webhook', [ApiController::class, 'handleWebhook'])->withoutMiddleware(['auth']);
 // Route::post('/api/paypal/webhook', [MarketsController::class, 'handleWebhook']);

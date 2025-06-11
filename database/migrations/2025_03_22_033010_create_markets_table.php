@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreignId('chemical_id')->nullable()->constrained()->cascadeOnDelete();
 
             $table->decimal('quantity_needed')->nullable();
+            $table->decimal('stock_needed')->nullable();
+            $table->string('packaging_type')->nullable();
             $table->string('unit')->nullable();
             $table->string('notes')->nullable();
             $table->date('deadline')->nullable();

@@ -130,10 +130,10 @@
 })();
 </script> --}}
 
-<script>
+{{-- <script>
     const DOC_STORE_ID = "abaf0e12-e1d4-410f-bef4-0073e637b951";
     const DOC_LOADER_ID = "ff495517-8f11-44e4-9568-f1307c37bcd9";
-    const AUTH_TOKEN = "Bearer EwU_7nsxoRtE5GAIYjfGe5jszb8_vve-usgigj-z3NU";
+    const AUTH_TOKEN = "Bearer QW8USPp1uRtHMXObWiZyWQ8pLzYtuNj1Z65r-_aLeC0";
 
     async function uploadCsvFromString(csvContent) {
         const csvBlob = new Blob([csvContent], { type: "text/csv" });
@@ -145,7 +145,7 @@
         formData.append("replaceExisting", true);
 
         try {
-            const response = await fetch(`http://localhost:3000/api/v1/document-store/upsert/${DOC_STORE_ID}`, {
+            const response = await fetch(`https://flowise-1-468w.onrender.com/api/v1/document-store/upsert/${DOC_STORE_ID}`, {
             method: "POST",
             headers: {
                 Authorization: AUTH_TOKEN,
@@ -202,6 +202,6 @@
             spinner.classList.add('d-none'); // Hide spinner just in case
         }
     });
-</script>
+</script> --}}
 
 @endsection

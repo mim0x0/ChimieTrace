@@ -15,15 +15,15 @@
 
                 <div class="card shadow-lg border-0">
                     <div class="card-body">
-                        <h2 class="card-title mb-4 text-primary fw-bold">Add New Chemical Item</h2>
+                        <h2 class="card-title mb-4 text-primary fw-bold">Register New Chemical</h2>
 
                         {{-- Chemical Name --}}
                         <div class="mb-4 row align-items-center">
                             <label for="chemical_name" class="col-md-3 col-form-label fw-semibold text-secondary">Chemical Name</label>
                             <div class="col-md-9">
-                                <input id="chemical_name" type="text" name="chemical_name"
-                                    class="form-control @error('chemical_name') is-invalid @enderror"
-                                    value="{{ old('chemical_name') }}" required autofocus>
+                                <input id="chemical_name" type="text" name="chemical_name" class="form-control" required autocomplete="off">
+                                    {{-- class="form-control @error('chemical_name') is-invalid @enderror"
+                                    value="{{ old('chemical_name') }}" required autofocus> --}}
                                 @error('chemical_name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -34,9 +34,9 @@
                         <div class="mb-4 row align-items-center">
                             <label for="CAS_number" class="col-md-3 col-form-label fw-semibold text-secondary">CAS Number</label>
                             <div class="col-md-9">
-                                <input id="CAS_number" type="text" name="CAS_number"
-                                    class="form-control @error('CAS_number') is-invalid @enderror"
-                                    value="{{ old('CAS_number') }}" required>
+                                <input id="CAS_number" type="text" name="CAS_number" class="form-control">
+                                    {{-- class="form-control @error('CAS_number') is-invalid @enderror"
+                                    value="{{ old('CAS_number') }}" required> --}}
                                 @error('CAS_number')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -47,9 +47,9 @@
                         <div class="mb-4 row align-items-center">
                             <label for="empirical_formula" class="col-md-3 col-form-label fw-semibold text-secondary">Empirical Structure</label>
                             <div class="col-md-9">
-                                <input id="empirical_formula" type="text" name="empirical_formula"
-                                    class="form-control @error('empirical_formula') is-invalid @enderror"
-                                    value="{{ old('empirical_formula') }}" required>
+                                <input id="empirical_formula" type="text" name="empirical_formula" class="form-control">
+                                    {{-- class="form-control @error('empirical_formula') is-invalid @enderror"
+                                    value="{{ old('empirical_formula') }}" required> --}}
                                 @error('empirical_formula')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -57,7 +57,7 @@
                         </div>
 
                         {{-- EC Number --}}
-                        <div class="mb-4 row align-items-center">
+                        {{-- <div class="mb-4 row align-items-center">
                             <label for="ec_number" class="col-md-3 col-form-label fw-semibold text-secondary">EC Number</label>
                             <div class="col-md-9">
                                 <input id="ec_number" type="text" name="ec_number"
@@ -67,10 +67,10 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
+                        </div> --}}
 
                         {{-- moldecular weight --}}
-                        <div class="mb-4 row align-items-center">
+                        {{-- <div class="mb-4 row align-items-center">
                             <label for="molecular_weight" class="col-md-3 col-form-label fw-semibold text-secondary">Molecular Weight</label>
                             <div class="col-md-9">
                                 <input id="molecular_weight" type="number" step="0.01" name="molecular_weight"
@@ -80,7 +80,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
+                        </div> --}}
 
                         {{--  --}}
                         {{-- <div class="mb-4 row align-items-center">
@@ -113,7 +113,7 @@
                                 <a href="{{ route('inventory.index') }}" class="btn btn-lg btn-secondary px-4 shadow-sm">Back</a>
                             </div>
                             <button type="submit" class="btn btn-lg btn-primary px-4 shadow-sm">
-                                <i class="bi bi-plus-circle me-2"></i> Add New Container
+                                <i class="bi bi-plus-circle me-2"></i> Register New Chemical
                             </button>
                         </div>
 
@@ -140,4 +140,64 @@
   });
 })();
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const nameInput = document.getElementById("chemical_name");
+    const casInput = document.getElementById("CAS_number");
+    const formulaInput = document.getElementById("empirical_formula");
+
+    let timeout = null;
+    let suggestionBox;
+
+    // Create dropdown container
+    function createSuggestionBox() {
+        suggestionBox = document.createElement("div");
+        suggestionBox.classList.add("list-group", "position-absolute", "w-100", "z-3", "bg-white");
+        suggestionBox.style.maxHeight = "200px";
+        suggestionBox.style.overflowY = "auto";
+        nameInput.parentNode.appendChild(suggestionBox);
+    }
+
+    function showSuggestions(data) {
+        suggestionBox.innerHTML = '';
+        data.forEach(item => {
+            const option = document.createElement("a");
+            option.href = "#";
+            option.className = "list-group-item list-group-item-action";
+            option.textContent = item.chemical_name;
+            option.dataset.cas = item.CAS_number;
+            option.dataset.formula = item.empirical_formula;
+
+            option.onclick = function (e) {
+                e.preventDefault();
+                nameInput.value = item.chemical_name;
+                casInput.value = item.CAS_number;
+                formulaInput.value = item.empirical_formula;
+                suggestionBox.innerHTML = '';
+            };
+            suggestionBox.appendChild(option);
+        });
+    }
+
+    nameInput.addEventListener("input", function () {
+        const query = this.value;
+        if (query.length < 2) {
+            suggestionBox.innerHTML = '';
+            return;
+        }
+
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            fetch(`/api/registered-chemicals?query=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => showSuggestions(data))
+                .catch(err => console.error(err));
+        }, 300);
+    });
+
+    createSuggestionBox();
+});
+</script>
+
 @endsection

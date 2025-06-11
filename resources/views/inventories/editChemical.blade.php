@@ -9,7 +9,7 @@
 
         <div class="card shadow-lg border-0">
             <div class="card-body">
-                <h2 class="card-title mb-4 text-primary fw-bold">Edit Chemical Item</h2>
+                <h2 class="card-title mb-4 text-primary fw-bold">Edit Chemical</h2>
 
                 {{-- Chemical Name --}}
                 <div class="mb-4 row align-items-center">
@@ -51,7 +51,7 @@
                 </div>
 
                 {{-- EC Number --}}
-                <div class="mb-4 row align-items-center">
+                {{-- <div class="mb-4 row align-items-center">
                     <label for="ec_number" class="col-md-3 col-form-label fw-semibold text-secondary">EC Number</label>
                     <div class="col-md-9">
                         <input id="ec_number" type="text" name="ec_number"
@@ -61,10 +61,10 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                </div>
+                </div> --}}
 
                 {{-- moldecular weight --}}
-                <div class="mb-4 row align-items-center">
+                {{-- <div class="mb-4 row align-items-center">
                     <label for="molecular_weight" class="col-md-3 col-form-label fw-semibold text-secondary">Molecular Weight</label>
                     <div class="col-md-9">
                         <input id="molecular_weight" type="number" step="0.01" name="molecular_weight"
@@ -74,7 +74,7 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                </div>
+                </div> --}}
 
                 {{--  --}}
                 {{-- <div class="mb-4 row align-items-center">
@@ -108,7 +108,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-lg btn-primary px-4 shadow-sm">
-                        <i class="bi bi-plus-circle me-2"></i> Edit Container
+                        <i class="bi bi-plus-circle me-2"></i> Edit Chemical
                     </button>
                 </div>
 

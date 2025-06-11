@@ -64,7 +64,7 @@ class Profile extends Model
     }
 
     protected $fillable = [
-        'status', 'score', 'profile_pic', 'company_name', 'phone_number',
+        'status', 'score', 'profile_pic', 'company_name', 'phone_number', 'address', 'city', 'postal',
     ];
 
     public function profilePic() {

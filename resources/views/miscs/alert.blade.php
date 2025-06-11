@@ -6,13 +6,19 @@
         <div class="col-md-10">
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i> Inventory Alerts</h3>
+                <h3 class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Notifications</h3>
             </div>
 
-            <div class="input-group mb-4 shadow-sm">
+            <div class="mb-3 d-flex flex-wrap gap-2">
+                <a href="{{ route('miscs.alert', 'chemical') }}" class="btn btn-outline-primary {{ $type == 'chemical' ? 'active' : '' }}">Chemicals</a>
+                <a href="{{ route('miscs.alert', 'market') }}" class="btn btn-outline-primary {{ $type == 'market' ? 'active' : '' }}">Chemical Supply</a>
+                <a href="{{ route('miscs.alert', 'user') }}" class="btn btn-outline-primary {{ $type == 'user' ? 'active' : '' }}">Users</a>
+            </div>
+
+            {{-- <div class="input-group mb-4 shadow-sm">
                 <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
                 <input type="text" id="search" class="form-control" placeholder="Search alerts..." value="{{ request('search') }}">
-            </div>
+            </div> --}}
 
             <div id="js-alerts-results">
                 @include('miscs._searchAlert', ['alerts' => $alerts])

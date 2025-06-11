@@ -41,14 +41,48 @@
                             @enderror
                         </div>
 
-                        {{-- Phone Number --}}
-                        <div class="mb-3">
-                            <label for="phone_number" class="form-label fw-semibold">Phone Number</label>
-                            <input id="phone_number" type="text" class="form-control @error('phone_number') is-invalid @enderror" name="phone_number" value="{{ old('phone_number') ?? $user->profile->phone_number }}">
-                            @error('phone_number')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        @php
+                            $role = auth()->user()->role;
+                        @endphp
+
+                        @if ($role === 'ADMIN' || $role === 'SUPPLIER')
+                            {{-- Phone Number --}}
+                            <div class="mb-3">
+                                <label for="phone_number" class="form-label fw-semibold">Phone Number</label>
+                                <input id="phone_number" type="text" class="form-control @error('phone_number') is-invalid @enderror" name="phone_number" value="{{ old('phone_number') ?? $user->profile->phone_number }}">
+                                @error('phone_number')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Address --}}
+                            <div class="mb-3">
+                                <label for="address" class="form-label fw-semibold">Address</label>
+                                <input id="address" type="text" class="form-control @error('address') is-invalid @enderror" name="address" value="{{ old('address') ?? $user->profile->address }}">
+                                @error('address')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Postal --}}
+                            <div class="mb-3">
+                                <label for="postal" class="form-label fw-semibold">Postal</label>
+                                <input id="postal" type="text" class="form-control @error('postal') is-invalid @enderror" name="postal" value="{{ old('postal') ?? $user->profile->postal }}">
+                                @error('postal')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- City --}}
+                            <div class="mb-3">
+                                <label for="city" class="form-label fw-semibold">City</label>
+                                <input id="city" type="text" class="form-control @error('city') is-invalid @enderror" name="city" value="{{ old('city') ?? $user->profile->city }}">
+                                @error('city')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        @endif
+
 
                         {{-- Profile Picture --}}
                         <div class="mb-4">

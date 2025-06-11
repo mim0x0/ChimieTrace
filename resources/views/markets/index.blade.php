@@ -36,15 +36,18 @@
 <div class="container py-4">
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold"><i class="bi bi-shop-window me-2"></i>Chemical Market</h2>
+        <h2 class="fw-bold"><i class="bi bi-shop-window me-2"></i>Chemical Supply</h2>
+        <div class="d-flex flex-column align-items-end ms-auto me-2">
+            @can('buy', App\Models\Market::class)
+                <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary rounded-pill shadow-sm"><i class="bi bi-cart me-2"></i>View Cart</a>
+            @endcan
+        </div>
         @can('create', App\Models\Market::class)
-            <a href="{{ url('/m/create') }}" class="btn btn-success shadow-sm">
-                <i class="bi bi-plus-circle me-2"></i>Add Chemical Demand
-            </a>
+        <a href="{{ url('/m/create') }}" class="btn btn-success shadow-sm">
+            <i class="bi bi-plus-circle me-2"></i>Add Chemical Request
+        </a>
         @endcan
-        {{-- @can('buy', App\Models\Market::class)
-            <a href="{{ route('cart.index') }}" class="btn btn-outline-secondary rounded-pill shadow-sm"><i class="bi bi-cart me-2"></i>View Shopping List</a>
-        @endcan --}}
+
     </div>
 
     {{-- Search + Filter --}}
@@ -65,9 +68,9 @@
                         <ul class="dropdown-menu dropdown-menu-end p-3" style="min-width: 250px;">
                             @foreach ([
                                 'chemical_name' => 'Chemical Name',
-                                'description' => 'Description',
+                                'variant' => 'Variant',
                                 'quantity_needed' => 'Quantity Needed',
-                                'notes' => 'Notes',
+                                'stock_needed' => 'Stock Needed',
                                 // 'stock' => 'Stock'
                             ] as $col => $label)
                                 <li>

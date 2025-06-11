@@ -38,23 +38,23 @@
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="col-chemical_name">Chemical Name</th>
-                            <th class="col-CAS_number">CAS Number</th>
-                            <th class="col-empirical_formula">Formula</th>
-                            <th class="col-ec_number">EC Number</th>
-                            <th class="col-molecular_weight">Mol. Weight</th>
-                            <th class="always-visible">Actions</th>
+                            <th class="col-chemical_name text-center">Chemical Name</th>
+                            <th class="col-CAS_number text-center">CAS Number</th>
+                            <th class="col-empirical_formula text-center">Formula</th>
+                            {{-- <th class="col-ec_number">EC Number</th>
+                            <th class="col-molecular_weight">Mol. Weight</th> --}}
+                            <th class="always-visible text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($chemicals as $chem)
                             <tr>
-                                <td class="col-chemical_name">{{ $chem->chemical_name }}</td>
-                                <td class="col-CAS_number">{{ $chem->CAS_number }}</td>
-                                <td class="col-empirical_formula">{{ $chem->empirical_formula }}</td>
-                                <td class="col-ec_number">{{ $chem->ec_number }}</td>
-                                <td class="col-molecular_weight">{{ $chem->molecular_weight }}</td>
-                                <td class="always-visible">
+                                <td class="col-chemical_name text-center">{{ $chem->chemical_name }}</td>
+                                <td class="col-CAS_number text-center">{{ $chem->CAS_number }}</td>
+                                <td class="col-empirical_formula text-center">{{ $chem->empirical_formula }}</td>
+                                {{-- <td class="col-ec_number">{{ $chem->ec_number }}</td>
+                                <td class="col-molecular_weight">{{ $chem->molecular_weight }}</td> --}}
+                                <td class="always-visible text-center">
                                     <a href="{{ url('/i/' . $chem->id) }}" class="btn btn-sm btn-outline-secondary">View</a>
                                 </td>
                             </tr>

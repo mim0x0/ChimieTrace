@@ -68,7 +68,7 @@ class RegisterController extends Controller
 
         if ($role === config('roles.faculty')) {
             Validator::extend('faculty_email', function($attribute, $value, $parameters, $validator){
-                return preg_match('/@(student|lecturer)\.com$/', $value);
+                return preg_match('/@(student|lecturer)\.usm.my$/', $value);
             });
 
             $email = ['required', 'string', 'email', 'max:255', 'unique:users', 'faculty_email'];

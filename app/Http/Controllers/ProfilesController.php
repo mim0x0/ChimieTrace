@@ -43,6 +43,9 @@ class ProfilesController extends Controller
             'score' => 'nullable',
             'profile_pic' => 'nullable',
             'phone_number' => 'nullable',
+            'address' => 'nullable',
+            'city' => 'nullable',
+            'postal' => 'nullable',
         ]);
 
         // dd(request()->all());
@@ -70,6 +73,9 @@ class ProfilesController extends Controller
             'score' => $data['score'] ?? '',
             'profile_pic' => $imagePath ?? '',
             'phone_number' => $data['phone_number'] ?? '',
+            'address' => $data['address'] ?? '',
+            'city' => $data['city'] ?? '',
+            'postal' => $data['postal'] ?? '',
         ]);
 
         return redirect("/profile/{$user->id}");

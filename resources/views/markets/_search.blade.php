@@ -35,9 +35,9 @@
                     <thead class="table-light">
                         <tr>
                             <th class="col-chemical_name">Chemical Name</th>
-                            <th class="col-description">Description</th>
+                            <th class="col-description">Variant</th>
                             <th class="col-quantity_needed">Quantity Needed</th>
-                            <th class="col-notes">Notes</th>
+                            <th class="col-notes">Stock Needed</th>
                             {{-- <th class="col-stock">Stock</th> --}}
                             <th class="always-visible">Actions</th>
                         </tr>
@@ -46,9 +46,9 @@
                         @foreach ($markets as $market)
                             <tr>
                                 <td class="col-chemical_name">{{ $market->chemical->chemical_name ?? '' }}</td>
-                                <td class="col-description">{{ $market->inventory->description ?? '' }}</td>
-                                <td class="col-quantity_needed">{{ $market->quantity_needed }}</td>
-                                <td class="col-notes">{{ $market->notes }}</td>
+                                <td class="col-description">{{ $market->inventory->serial_number ?? '' }}</td>
+                                <td class="col-quantity_needed">{{ $market->quantity_needed }} {{ $market->unit }}</td>
+                                <td class="col-notes">{{ $market->stock_needed }}</td>
                                 {{-- <td class="col-stock">{{ $market->stock }}</td> --}}
                                 <td class="always-visible">
                                     <a href="{{ url('/m/' . $market->id) }}" class="btn btn-sm btn-outline-secondary">View</a>

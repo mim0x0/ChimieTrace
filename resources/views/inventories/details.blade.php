@@ -38,15 +38,15 @@
                 <ul class="list-group list-group-flush mb-3">
                     <li class="list-group-item"><strong>CAS Number:</strong> {{ $chemical->CAS_number }}</li>
                     <li class="list-group-item"><strong>Empirical Formula:</strong> {{ $chemical->empirical_formula }}</li>
-                    <li class="list-group-item"><strong>EC Number:</strong> {{ $chemical->ec_number }}</li>
-                    <li class="list-group-item"><strong>Molecular Weight:</strong> {{ $chemical->molecular_weight }}</li>
+                    {{-- <li class="list-group-item"><strong>EC Number:</strong> {{ $chemical->ec_number }}</li>
+                    <li class="list-group-item"><strong>Molecular Weight:</strong> {{ $chemical->molecular_weight }}</li> --}}
                 </ul>
                 <a href="{{ $chemical->SDS() }}" target="_blank" class="btn btn-outline-success mt-2"><i class="bi bi-file-text me-2"></i>View SDS</a>
             </div>
 
 
 
-            @if($chemical->properties)
+            {{-- @if($chemical->properties)
                 <div class="card border-0 shadow-sm p-4 mb-4">
                     <h5 class="fw-semibold mb-3">Chemical Properties</h5>
                     <div class="row">
@@ -58,12 +58,12 @@
                         <div class="col-md-12 mt-2"><strong>Notes:</strong> {{ $chemical->properties->other_details }}</div>
                     </div>
                 </div>
-            @endif
+            @endif --}}
 
             @can('update', $chemical)
                 <div class="mb-4">
                     <a href="/i/c/{{$chemical->id}}/edit" class="btn btn-outline-primary me-2"><i class="bi bi-pencil-square me-2"></i>Edit Chemical</a>
-                    <a href="/i/cp/{{$chemical->id}}/edit" class="btn btn-outline-secondary"><i class="bi bi-gear-fill me-2"></i>Edit Properties</a>
+                    {{-- <a href="/i/cp/{{$chemical->id}}/edit" class="btn btn-outline-secondary"><i class="bi bi-gear-fill me-2"></i>Edit Properties</a> --}}
                 </div>
             @endcan
         </div>
@@ -91,7 +91,7 @@
         </div>
 
         @can('create', App\Models\Inventory::class)
-            <a href="{{ url('/i/createInventory/'.$chemical->id) }}" class="btn btn-success"><i class="bi bi-plus-circle me-2"></i>Add Inventory</a>
+            <a href="{{ url('/i/createInventory/'.$chemical->id) }}" class="btn btn-success"><i class="bi bi-plus-circle me-2"></i>Add New Container</a>
         @endcan
     </div>
 

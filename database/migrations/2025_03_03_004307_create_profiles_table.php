@@ -22,6 +22,10 @@ return new class extends Migration
 
             // $table->string('company_name')->nullable();
             $table->string('phone_number')->nullable();
+
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('postal')->nullable();
             $table->timestamps();
 
             // $table->index('user_id');

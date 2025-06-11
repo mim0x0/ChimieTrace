@@ -119,7 +119,7 @@
         <h2 class="fw-bold"><i class="bi bi-box-seam me-2"></i>Chemical Inventory</h2>
         @can('create', App\Models\Chemical::class)
             <a href="{{ url('/i/createChemical') }}" class="btn btn-success shadow-sm">
-                <i class="bi bi-plus-circle me-2"></i>Add Chemical
+                <i class="bi bi-plus-circle me-2"></i>Register New Chemical
             </a>
         @endcan
     </div>
@@ -144,8 +144,8 @@
                                 'chemical_name' => 'Chemical Name',
                                 'CAS_number' => 'CAS Number',
                                 'empirical_formula' => 'Empirical Formula',
-                                'ec_number' => 'EC Number',
-                                'molecular_weight' => 'Mol. Weight'
+                                // 'ec_number' => 'EC Number',
+                                // 'molecular_weight' => 'Mol. Weight'
                             ] as $col => $label)
                                 <li>
                                     <label class="form-check">

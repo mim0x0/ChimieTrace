@@ -190,7 +190,7 @@
                                 $alertCount = \App\Models\Alert::where('is_read', false)->count();
                             @endphp
                             <li class="nav-item">
-                                <a class="nav-link" href="/alerts">
+                                <a class="nav-link" href="/alerts/chemical">
                                     Alerts <span class="badge bg-danger">{{ $alertCount }}</span>
                                 </a>
                             </li>
@@ -240,10 +240,11 @@
                         <li><a href="{{ url('/inventory') }}" class="btn btn-outline-primary w-100"><i class="bi bi-box-seam me-2"></i>Inventory</a></li>
                         <li><a href="{{ url('/chemistry-news') }}" class="btn btn-outline-primary w-100"><i class="bi bi-newspaper me-2"></i>Chemistry News</a></li>
                     @endcan
-                    {{-- @can('viewAny', App\Models\Market::class) --}}
-                        <li><a href="{{ url('/market') }}" class="btn btn-outline-primary w-100"><i class="bi bi-shop-window me-2"></i>Market</a></li>
-                    {{-- @endcan --}}
-                    @can('viewAny', App\Models\Chemical::class)
+                    @can('viewAny', App\Models\Market::class)
+                        <li><a href="{{ url('/market') }}" class="btn btn-outline-primary w-100"><i class="bi bi-shop-window me-2"></i>Chemical Supply</a></li>
+                        <li><a href="{{ url('/orders') }}" class="btn btn-outline-primary w-100"><i class="bi bi-receipt me-2"></i>Purchase Orders</a></li>
+                    @endcan
+                    @cannot('viewAny', App\Models\Market::class)
                         <li><a href="{{ url('/request') }}" class="btn btn-outline-primary w-100"><i class="bi bi-envelope-check me-2"></i>Request to Admin</a></li>
                     @endcan
                     @can('create', App\Models\Inventory::class)
@@ -266,14 +267,14 @@
         </div>
     </div>
 
-    <!-- Chatbot Embed -->
+    <!-- Quick Assist Embed -->
     @auth
         @if(auth()->user()->role === config('roles.admin') || auth()->user()->role === config('roles.faculty'))
             <script type="module">
                 import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
                 Chatbot.init({
                     chatflowid: "ab779e35-7a6a-4ddd-b3ef-5eb8c60237ef",
-                    apiHost: "http://localhost:3000",
+                    apiHost: "https://flowise-1-468w.onrender.com",
                 })
             </script>
         @endif

@@ -6,7 +6,7 @@
     <div class="mx-2">
         <a href="{{ route('market.index') }}" class="btn btn-lg btn-secondary px-4 shadow-sm">Back</a>
     </div>
-    <h2 class="mb-4 text-center fw-bold"><i class="bi bi-shop-window me-2"></i>Chemical Demand</h2>
+    <h2 class="mb-4 text-center fw-bold"><i class="bi bi-shop-window me-2"></i>Chemical Request</h2>
 
     {{-- Success Alert --}}
     {{-- <div class="row" id="paypal-success" style="display: none;">
@@ -34,9 +34,12 @@
 
                 <ul class="list-group list-group-flush mb-3">
                     <li class="list-group-item"><strong>CAS Number:</strong> {{ $markets->chemical->CAS_number }}</li>
-                    <li class="list-group-item"><strong>Description:</strong> {{ $markets->inventory->description }}</li>
-                    <li class="list-group-item"><strong>Quantity Needed:</strong> {{ $markets->quantity_needed }}</li>
+                    <li class="list-group-item"><strong>Variant:</strong> {{ $markets->inventory->serial_number }}</li>
+                    <li class="list-group-item"><strong>Quantity Needed:</strong> {{ $markets->quantity_needed }} {{ $markets->unit }}</li>
+                    <li class="list-group-item"><strong>Stock Needed:</strong> {{ $markets->stock_needed }}</li>
                     <li class="list-group-item"><strong>Notes:</strong> {{ $markets->notes }}</li>
+                    <li class="list-group-item"><strong>Summary:</strong> Requester need total of {{ $markets->quantity_needed * $markets->stock_needed }} {{ $markets->unit }}
+                                                                            ({{ $markets->quantity_needed }} × {{ $markets->stock_needed }})</li>
                     {{-- <li class="list-group-item"><strong>Price:</strong> {{ $markets->currency }} {{ number_format($markets->price, 2) }}</li> --}}
                 </ul>
 

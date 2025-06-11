@@ -23,10 +23,10 @@ class Bid extends Model
         $user = auth()->check() ? auth()->user()->name : 'System';
 
         $base = match ($eventName) {
-            'created' => "Offer for {$this->market->chemical->chemical_name} Description: {$this->market->inventory->description}",
-            'updated' => "Offer for {$this->market->chemical->chemical_name} Description: {$this->market->inventory->description} Supplier: {$this->user->name}",
-            'deleted' => "Offer for {$this->market->chemical->chemical_name} Description: {$this->market->inventory->description}",
-            default => "$user performed $eventName offer on {$this->market->chemical->chemical_name} Description: {$this->market->inventory->description}",
+            'created' => "Offer for {$this->market->chemical->chemical_name} ({$this->market->inventory->serial_number})",
+            'updated' => "{$this->market->chemical->chemical_name} ({$this->market->inventory->serial_number} Offered By {$this->user->name})",
+            'deleted' => "Offer for {$this->market->chemical->chemical_name} ({$this->market->inventory->serial_number})",
+            default => "$user performed $eventName offer on {$this->market->chemical->chemical_name} ({$this->market->inventory->serial_number})",
         };
 
     //     if ($eventName === 'updated') {
@@ -62,7 +62,7 @@ class Bid extends Model
     }
 
     protected $fillable = [
-        'price', 'quantity', 'delivery', 'notes', 'user_id', 'status',
+        'price', 'quantity', 'delivery', 'notes', 'user_id', 'status', 'stock',
     ];
 
     public function market() {
@@ -72,4 +72,9 @@ class Bid extends Model
     public function user() {
         return $this->belongsTo(User::class);
     }
+
+    public function bulkPrices(){
+        return $this->hasMany(BulkPrice::class);
+    }
+
 }

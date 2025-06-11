@@ -8,7 +8,8 @@
 
         <div class="card shadow-lg border-0">
             <div class="card-body">
-                <h2 class="card-title mb-4 text-primary fw-bold">Use Container # {{$inventory->serial_number}}</h2>
+                <h2 class="card-title mb-4 text-primary fw-bold">Use Container #{{ $inventory->container_number }}</h2>
+                <h2 class="card-title mb-4 text-primary fw-bold">Variant: {{$inventory->serial_number}}</h2>
 
                 <p>Quantity Available: {{ $inventory->quantity }}</p>
 

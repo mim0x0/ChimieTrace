@@ -17,7 +17,7 @@
                     <tr>
                         <td>{{ $i->created_at->format('Y-m-d H:i') }}</td>
                         <td>{{ $i->user_name ?? 'System' }}</td>
-                        <td class="text-capitalize">{{ $i->chemical_name }} - {{ $i->chemical_cas }} ({{ $i->inventory_serial }})</td>
+                        <td class="text-capitalize">{{ $i->chemical_name }} ({{ $i->inventory_serial }} #{{ $i->inventory->container_number }})</td>
                         <td>{{ $i->reason }}</td>
                         <td>{{ $i->quantity_used ?? '' }}</td>
                         <td>{{ $i->quantity_left ?? '' }}</td>

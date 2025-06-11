@@ -2,21 +2,23 @@
 
 namespace App\Notifications;
 
+use App\Models\PurchaseOrder;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class UserBanned extends Notification
+class PurchaseOrdered extends Notification
 {
     use Queueable;
+    protected $purchaseOrder;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(public string $name, public string $email)
+    public function __construct(PurchaseOrder $purchaseOrder)
     {
-        //
+        $this->purchaseOrder = $purchaseOrder;
     }
 
     /**
@@ -35,13 +37,12 @@ class UserBanned extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->subject('User Ban')
-                    ->line('You have been banned from ChimieTrace site by admin.')
-                    // ->line('The introduction to the notification.')
-                    // ->action('Notification Action', url('/'))
-                    ->line('Please email to admin@admin.com for more information.');
-                    // ->line('Please email the [admin](' . 'mailto:' . $this->email . ') for more information.');
-
+                    ->subject('New Purchase Order Received')
+                    ->greeting('Hello ' . $notifiable->name)
+                    ->line('A new purchase order has been placed by ' . $this->purchaseOrder->user->name . '.')
+                    ->line('Order Total: RM ' . number_format($this->purchaseOrder->total, 2))
+                    ->action('View Purchase Order', url('/orders'))
+                    ->line('Please process the order promptly. Thank you!');
     }
 
     /**

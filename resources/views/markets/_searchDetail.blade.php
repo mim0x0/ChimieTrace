@@ -9,31 +9,55 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <h5 class="card-title mb-0">
-                        @if($b->status === 'pending')
+                        Supplier: {{ $b->user->name }}
+                        {{-- @if($b->status === 'pending')
                             <span class="badge bg-warning text-dark ms-2">Pending</span>
-                        {{-- @elseif($i->status === 'disabled')
-                            <span class="badge bg-secondary ms-2">Empty</span> --}}
                         @else
                             <span class="badge bg-success ms-2">Accepted</span>
-                        @endif
+                        @endif --}}
                     </h5>
 
-                    @if((auth()->user()->role === config('roles.admin')) && $b->status === 'pending')
+                    {{-- @if((auth()->user()->role === config('roles.admin')) && $b->status === 'pending')
                         <a href="{{ route('market.accept', $b->id) }}" class="btn btn-sm btn-outline-warning">Accept</a>
-                    @endif
+                    @endif --}}
                 </div>
 
                 <div class="row">
                     <div class="col-md-6">
-                        <p><strong>Supplier:</strong> {{ $b->user->name }}</p>
-                        <p><strong>Price (MYR):</strong> {{ $b->price }}</p>
-                        <p><strong>Stock Offered:</strong> {{ $b->quantity }}</p>
+                        {{-- <p><strong>Supplier:</strong> {{ $b->user->name }}</p> --}}
+                        <p><strong>Quantity per unit:</strong> {{ $b->quantity }}</p>
+                        <p><strong>Stock Available:</strong> {{ $b->stock }}</p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Delivery Time:</strong> {{ $b->delivery }}</p>
+                        <p><strong>Price per unit:</strong> RM{{ $b->price }}</p>
                         <p><strong>Notes:</strong> {{ $b->notes }}</p>
                     </div>
                 </div>
+
+                <fieldset class="border rounded p-3 mb-4 mt-3">
+                    <legend class="float-none w-auto px-2 text-primary fw-semibold">Bulk Pricing Tiers</legend>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Tier</th>
+                                <th>Minimum Stock</th>
+                                <th>Price per Unit (RM)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($b->bulkPrices->sortBy('min_qty') as $tier)
+                                <tr>
+                                    <td>Tier {{ $tier->tier }}</td>
+                                    <td>{{ $tier->min_qty }}</td>
+                                    <td>RM {{ number_format($tier->price_per_unit, 2) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </fieldset>
+                <h5 class="mt-4">Bulk Price Table</h5>
+
+
 
                 <div class="d-flex flex-wrap gap-2 mt-3">
                     @if(auth()->user()->id === $b->user_id)
@@ -53,6 +77,20 @@
                     @if(auth()->user()->id === $b->user_id)
                         <a href="/m/{{$b->id}}/bid/edit" class="btn btn-outline-success"><i class="bi bi-pencil-fill me-2"></i>Edit Offer</a>
                     @endif
+
+                    @can('create', App\Models\Market::class)
+                        <form action="{{ route('cart.add', $b->id) }}" method="POST" class="d-flex gap-2 align-items-end">
+                            @csrf
+                            <div>
+                                <label for="quantity" class="form-label">Quantity to Order</label>
+                                <input type="number" name="quantity" class="form-control" min="1" max="{{ $b->stock }}" required>
+                                {{-- <small class="text-muted">In Cart: {{ $userCartItems[$b->id]->quantity ?? 0 }}</small> --}}
+                            </div>
+                            <button class="btn btn-success mt-3" type="submit">
+                                <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                            </button>
+                        </form>
+                    @endcan
                 </div>
 
             </div>

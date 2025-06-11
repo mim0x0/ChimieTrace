@@ -11,7 +11,7 @@
                 <a href="{{ route('miscs.logs', 'user') }}" class="btn btn-outline-primary {{ $type == 'user' ? 'active' : '' }}">Users</a>
                 <a href="{{ route('miscs.logs', 'chemical') }}" class="btn btn-outline-primary {{ $type == 'chemical' ? 'active' : '' }}">Chemicals</a>
                 <a href="{{ route('miscs.logs', 'inventory') }}" class="btn btn-outline-primary {{ $type == 'inventory' ? 'active' : '' }}">Inventories</a>
-                <a href="{{ route('miscs.logs', 'market') }}" class="btn btn-outline-primary {{ $type == 'market' ? 'active' : '' }}">Markets</a>
+                <a href="{{ route('miscs.logs', 'market') }}" class="btn btn-outline-primary {{ $type == 'market' ? 'active' : '' }}">Chemical Supply</a>
                 <a href="/logs/usage" class="btn btn-outline-primary {{ $type == 'usage' ? 'active' : '' }}">Container Usage</a>
             </div>
 

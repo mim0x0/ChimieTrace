@@ -20,22 +20,11 @@
 
         <div class="card shadow-lg border-0">
             <div class="card-body">
-                <h2 class="card-title mb-4 text-primary fw-bold">Submit Offer for: {{ $bids->market->inventory->chemical->chemical_name }} ({{ $bids->market->inventory->description }})</h2>
+                <h2 class="card-title mb-4 text-primary fw-bold">Edit Offer for: {{ $bids->market->inventory->chemical->chemical_name }} ({{ $bids->market->inventory->serial_number }})</h2>
 
-                {{-- price & unit --}}
                 <div class="mb-4 row">
                     <div class="col-md-6">
-                        <label for="price" class="form-label fw-semibold text-secondary">Price Offered (RM)</label>
-                        <input id="price" type="number" step="0.01" name="price"
-                            class="form-control @error('price') is-invalid @enderror"
-                            value="{{ old('price') ?? $bids->price }}" required>
-                        @error('price')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-4">
-                        <label for="quantity" class="form-label fw-semibold text-secondary">Quantity Offered</label>
+                        <label for="quantity" class="form-label fw-semibold text-secondary">Quantity per unit (in {{ $bids->market->unit }})</label>
                         <input id="quantity" type="number" step="0.01" name="quantity"
                             class="form-control @error('quantity') is-invalid @enderror"
                             value="{{ old('quantity') ?? $bids->quantity }}" required>
@@ -43,16 +32,26 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <div class="col-md-6">
+                        <label for="stock" class="form-label fw-semibold text-secondary">Stock Available</label>
+                        <input id="stock" type="number" step="0.01" name="stock"
+                            class="form-control @error('stock') is-invalid @enderror"
+                            value="{{ old('stock') ?? $bids->stock }}" required>
+                        @error('stock')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
 
-                {{-- delivery --}}
+                {{-- price --}}
                 <div class="mb-4 row align-items-center">
-                    <label for="delivery" class="col-md-3 col-form-label fw-semibold text-secondary">Delivery Time</label>
+                    <label for="price" class="col-md-3 col-form-label fw-semibold text-secondary">Price Offered per unit (do not put RM)</label>
                     <div class="col-md-9">
-                        <input id="delivery" type="text" name="delivery"
-                            class="form-control @error('delivery') is-invalid @enderror"
-                            value="{{ old('delivery') ?? $bids->delivery }}" required autofocus>
-                        @error('delivery')
+                        <input id="price" type="text" name="price"
+                            class="form-control @error('price') is-invalid @enderror"
+                            value="{{ old('price') ?? $bids->price }}" required autofocus>
+                        @error('price')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -70,6 +69,29 @@
                         @enderror
                     </div>
                 </div>
+
+                <label class="form-label fw-semibold text-secondary">Bulk Pricing Tiers</label>
+                <div id="tier-wrapper">
+                    @foreach(old('tiers', $bids->bulkPrices ?? [['min_qty' => '', 'price' => '']]) as $i => $tier)
+                        <div class="row mb-2">
+                            <div class="col-1">
+                                <input type="text" readonly class="form-control-plaintext fw-semibold" value="Tier {{ $i + 1 }}">
+                                <input type="hidden" name="tiers[{{ $i }}][tier]" value="{{ $i + 1 }}">
+                            </div>
+                            <div class="col">
+                                <input type="number" name="tiers[{{ $i }}][min_qty]" class="form-control" placeholder="Min Qty" value="{{ $tier['min_qty'] ?? '' }}">
+                            </div>
+                            <div class="col">
+                                <input type="number" name="tiers[{{ $i }}][price]" class="form-control" placeholder="Price per Unit (RM)" step="0.01" value="{{ $tier['price_per_unit'] ?? '' }}">
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-danger" onclick="this.closest('.row').remove()">–</button>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                <button type="button" class="btn btn-outline-primary mt-2" onclick="addTier()">+ Add Tier</button>
+
 
                 {{-- Submit Button --}}
                 <div class="d-flex justify-content-end pt-3">
@@ -100,6 +122,32 @@
     }, false);
   });
 })();
+</script>
+
+<script>
+let tierIndex = {{ count(old('tiers', $bids->bulkPrices ?? [[]])) }};
+function addTier() {
+    const wrapper = document.getElementById('tier-wrapper');
+    const row = document.createElement('div');
+    row.classList.add('row', 'mb-2');
+    row.innerHTML = `
+        <div class="col-1">
+            <input type="text" readonly class="form-control-plaintext fw-semibold" value="Tier ${tierIndex + 1}">
+            <input type="hidden" name="tiers[${tierIndex}][tier]" value="${tierIndex + 1}">
+        </div>
+        <div class="col">
+            <input type="number" name="tiers[${tierIndex}][min_qty]" class="form-control" placeholder="Min Qty" required>
+        </div>
+        <div class="col">
+            <input type="number" name="tiers[${tierIndex}][price]" class="form-control" placeholder="Price per Unit (RM)" step="0.01" required>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-danger" onclick="this.closest('.row').remove()">–</button>
+        </div>
+    `;
+    wrapper.appendChild(row);
+    tierIndex++;
+}
 </script>
 
 

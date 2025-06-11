@@ -27,10 +27,10 @@ class Inventory extends Model
         $user = auth()->check() ? auth()->user()->name : 'System';
 
         $base = match ($eventName) {
-            'created' => "{$this->chemical->chemical_name} Serial: {$this->serial_number} Container #{$this->container_number}",
-            'updated' => "{$this->chemical->chemical_name} Serial: {$this->serial_number} Container #{$this->container_number}",
-            'deleted' => "{$this->chemical->chemical_name} Serial: {$this->serial_number} Container #{$this->container_number}",
-            default => "$user performed $eventName on chemical container: {$this->chemical->chemical_name} Serial: {$this->serial_number} Container #{$this->container_number}",
+            'created' => "{$this->chemical->chemical_name} ({$this->serial_number} #{$this->container_number})",
+            'updated' => "{$this->chemical->chemical_name} ({$this->serial_number} #{$this->container_number})",
+            'deleted' => "{$this->chemical->chemical_name} ({$this->serial_number} #{$this->container_number})",
+            default => "$user performed $eventName on chemical container: {$this->chemical->chemical_name} ({$this->serial_number} #{$this->container_number})",
         };
 
     //     if ($eventName === 'updated') {

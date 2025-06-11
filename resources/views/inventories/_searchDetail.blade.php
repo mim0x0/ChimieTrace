@@ -9,7 +9,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <h5 class="card-title mb-0">
-                            Container #{{ $i->container_number }}
+                            Variant: {{ $i->serial_number }} #{{ $i->container_number }}
                             @if($i->status === 'sealed')
                                 <span class="badge bg-warning text-dark ms-2">Sealed</span>
                             @elseif($i->status === 'empty')
@@ -26,17 +26,17 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>Serial #:</strong> {{ $i->serial_number }}</p>
-                            <p><strong>Description:</strong> {{ $i->description }}</p>
-                            <p><strong>Brand:</strong> {{ $i->brand }}</p>
-                            <p><strong>Notes:</strong> {{ $i->notes }}</p>
-                            <p><strong>Threshold:</strong> {{ $i->min_quantity }}</p>
-                        </div>
-                        <div class="col-md-6">
+                            {{-- <p><strong>Variant:</strong> {{ $i->serial_number }}</p> --}}
+                            {{-- <p><strong>Description:</strong> {{ $i->description }}</p> --}}
                             <p><strong>Location:</strong> {{ $i->location }}</p>
                             <p><strong>Quantity:</strong> {{ $i->quantity }} {{ $i->unit }}</p>
+                            <p><strong>Threshold:</strong> {{ $i->min_quantity }} {{ $i->unit }}</p>
+                            <p><strong>Brand:</strong> {{ $i->brand }}</p>
+                        </div>
+                        <div class="col-md-6">
                             <p><strong>Acquired:</strong> {{ $i->acq_at }}</p>
                             <p><strong>Expiry:</strong> {{ $i->exp_at }}</p>
+                            <p><strong>Notes:</strong> {{ $i->notes }}</p>
                         </div>
                     </div>
 
@@ -60,7 +60,7 @@
                         @endcan
 
                         @can('create', App\Models\Inventory::class)
-                            <a href="{{ url('/i/addInventory/'.$i->id) }}" class="btn btn-outline-primary"><i class="bi bi-plus-circle me-2"></i>Top Up Inventory</a>
+                            <a href="{{ url('/i/addInventory/'.$i->id) }}" class="btn btn-outline-primary"><i class="bi bi-plus-circle me-2"></i>Top Up Container</a>
                         @endcan
                     </div>
 
