@@ -22,6 +22,7 @@
                                 <th scope="col">Quantity</th>
                                 <th scope="col">Subtotal (MYR)</th>
                                 <th scope="col">Contact</th>
+                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -66,6 +67,15 @@
                                         </small>
                                     </td>
                                     <td>{{ optional($item->bid->user->profile)->phone_number ?? 'N/A' }}</td>
+                                    <td>
+                                        <form action="{{ route('cart.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Remove this item from cart?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

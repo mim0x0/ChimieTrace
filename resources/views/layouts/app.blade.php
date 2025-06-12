@@ -270,11 +270,18 @@
     <!-- Quick Assist Embed -->
     @auth
         @if(auth()->user()->role === config('roles.admin') || auth()->user()->role === config('roles.faculty'))
-            <script type="module">
+            {{-- <script type="module">
                 import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
                 Chatbot.init({
                     chatflowid: "ab779e35-7a6a-4ddd-b3ef-5eb8c60237ef",
                     apiHost: "https://flowise-1-468w.onrender.com",
+                })
+            </script> --}}
+            <script type="module">
+                import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
+                Chatbot.init({
+                    chatflowid: "ab779e35-7a6a-4ddd-b3ef-5eb8c60237ef",
+                    apiHost: "http://localhost:3000",
                 })
             </script>
         @endif

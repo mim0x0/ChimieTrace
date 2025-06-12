@@ -545,6 +545,14 @@ class MarketsController extends Controller
         return redirect()->back()->with('success', 'Cart updated.');
     }
 
+    public function destroy(CartItem $item){
+        // $this->authorize('delete', $item); // Optional: use policies if needed
+
+        $item->delete();
+
+        return redirect()->back()->with('success', 'Item removed from cart.');
+    }
+
     public function orders(){
         // $this->authorize('buy', Market::class);
         $user = auth()->user();
@@ -614,7 +622,7 @@ class MarketsController extends Controller
                     'subtotal' => $subtotal,
                     'chemical_name' => $item->bid->market->chemical->chemical_name,
                     'variant' => $item->bid->market->inventory->serial_number,
-                    'tier' => $tier->tier,
+                    'tier' => $tier->tier ?? '',
                 ]);
                 // dd($poi);
 

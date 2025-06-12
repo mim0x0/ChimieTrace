@@ -98,6 +98,7 @@ Route::get('/cart', [MarketsController::class, 'viewCart'])->name('cart.index');
 Route::post('/cart/add/{bids}', [MarketsController::class, 'addToCart'])->name('cart.add');
 Route::patch('/cart/update/{item}', [MarketsController::class, 'updateCart'])->name('cart.update');
 Route::post('/cart/{cart}/checkout', [MarketsController::class, 'checkout'])->name('cart.checkout');
+Route::delete('/cart/{item}', [MarketsController::class, 'destroy'])->name('cart.destroy');
 Route::get('/orders', [MarketsController::class, 'orders'])->name('cart.orders');
 Route::patch('/orders/{order}/respond', [MarketsController::class, 'respond'])->name('orders.respond');
 Route::patch('/orders/{order}/done', [MarketsController::class, 'markDone'])->name('orders.markDone');
