@@ -341,7 +341,7 @@ class InventoriesController extends Controller
         }
 
         if ($serial && $serial->status === 'notified') {
-            $serial->buy_status = 'safe';
+            $serial->status = 'safe';
             $serial->save();
         }
 
@@ -474,7 +474,7 @@ class InventoriesController extends Controller
             ->where(function ($q) use ($query) {
                 $q->where('description', 'LIKE', "%{$query}%")
                     ->orWhere('location', 'LIKE', "%{$query}%")
-                    ->orWhere('pacakaging_type', 'LIKE', "%{$query}%")
+                    ->orWhere('packaging_type', 'LIKE', "%{$query}%")
                     ->orWhere('quantity', 'LIKE', "%{$query}%")
                     ->orWhere('unit', 'LIKE', "%{$query}%")
                     ->orWhere('status', 'LIKE', "%{$query}%")
@@ -483,7 +483,7 @@ class InventoriesController extends Controller
                     ->orWhere('brand', 'LIKE', "%{$query}%")
                     ->orWhere('add_by', 'LIKE', "%{$query}%")
                     ->orWhere('acq_at', 'LIKE', "%{$query}%")
-                    ->orWhere('ext_at', 'LIKE', "%{$query}%");
+                    ->orWhere('exp_at', 'LIKE', "%{$query}%");
             })
             ->paginate(5);
         } else {
@@ -491,7 +491,7 @@ class InventoriesController extends Controller
             ->where(function ($q) use ($query) {
                 $q->where('description', 'LIKE', "%{$query}%")
                     ->orWhere('location', 'LIKE', "%{$query}%")
-                    ->orWhere('pacakaging_type', 'LIKE', "%{$query}%")
+                    ->orWhere('packaging_type', 'LIKE', "%{$query}%")
                     ->orWhere('quantity', 'LIKE', "%{$query}%")
                     ->orWhere('unit', 'LIKE', "%{$query}%")
                     ->orWhere('status', 'LIKE', "%{$query}%")
@@ -500,7 +500,7 @@ class InventoriesController extends Controller
                     ->orWhere('brand', 'LIKE', "%{$query}%")
                     ->orWhere('add_by', 'LIKE', "%{$query}%")
                     ->orWhere('acq_at', 'LIKE', "%{$query}%")
-                    ->orWhere('ext_at', 'LIKE', "%{$query}%");
+                    ->orWhere('exp_at', 'LIKE', "%{$query}%");
             })
             ->paginate(5);
         }

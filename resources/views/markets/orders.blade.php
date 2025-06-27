@@ -112,7 +112,7 @@
                         </div>
                     </form>
                 </div>
-            @elseif ($user->role === config('roles.admin') && $order->user_id === $user->id && $order->status === 'accepted')
+            @elseif ($user->role === config('roles.admin') && $order->user_id === $user->id && ($order->status === 'accepted' || $order->status === 'rejected'))
                 <div class="card-footer bg-white border-top">
                     @if($order->status !== 'done')
                         <form action="{{ route('orders.markDone', $order->id) }}" method="POST" onsubmit="return confirm('Mark this order as done?');">

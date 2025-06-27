@@ -56,11 +56,11 @@ class MarketsController extends Controller
                     $subQ->where('name', 'LIKE', "%{$query}%");
                 });
             })
-            ->orWhere('description', 'LIKE', "%{$query}%")
+            // ->orWhere('description', 'LIKE', "%{$query}%")
             // ->orWhere('user_id', 'LIKE', "%{$query}%")
-            ->orWhere('price', 'LIKE', "%{$query}%")
-            ->orWhere('currency', 'LIKE', "%{$query}%")
-            ->orWhere('stock', 'LIKE', "%{$query}%");
+            // ->orWhere('price', 'LIKE', "%{$query}%")
+            // ->orWhere('currency', 'LIKE', "%{$query}%")
+            ->orWhere('notes', 'LIKE', "%{$query}%");
         })->paginate(10);
 
         if ($request->ajax()) {

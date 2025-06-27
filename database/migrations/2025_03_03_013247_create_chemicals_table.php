@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('chemical_name');
-            $table->string('CAS_number')->unique();
+            $table->string('CAS_number');
             // $table->string('serial_number')->nullable();
             // $table->string('SKU')->nullable();
             $table->string('empirical_formula')->nullable();
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('SDS_file')->nullable();
             $table->string('reg_by')->nullable();
 
-            $table->foreignId('user_id')->constrained()->index();
+            $table->foreignId('user_id')->constrained();
 
             $table->timestamps();
         });

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('chemical_id')->constrained()->index();
+            $table->foreignId('chemical_id')->constrained();
 
             $table->string('description')->nullable();
             $table->string('location')->nullable();

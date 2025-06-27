@@ -261,16 +261,21 @@
 </script>
 
 <script>
+    function getLocalToday() {
+        const today = new Date();
+        today.setMinutes(today.getMinutes() - today.getTimezoneOffset()); // convert to local date
+        return today.toISOString().split('T')[0];
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const acqInput = document.getElementById('acq_at');
         const expInput = document.getElementById('exp_at');
 
-        // Set min date for acq_at = today - 14 days
         const today = new Date();
         const fourteenDaysAgo = new Date();
         fourteenDaysAgo.setDate(today.getDate() - 14);
         acqInput.setAttribute('min', fourteenDaysAgo.toISOString().split('T')[0]);
-        acqInput.setAttribute('max', today.toISOString().split('T')[0]);
+        acqInput.setAttribute('max', getLocalToday());
 
         // Update exp_at min when acq_at changes
         function updateExpMin() {
